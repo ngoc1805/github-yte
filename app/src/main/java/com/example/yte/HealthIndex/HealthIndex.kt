@@ -76,7 +76,7 @@ fun HealthIndex() {
                 )
             }
         ) {
-            // tab BMI&BSA
+            // tab BMI
             Tab(
                 selected = selectedTab1 == 0,
                 onClick = { selectedTab1 = 0 },
@@ -84,7 +84,7 @@ fun HealthIndex() {
 
             ){
                 Text(
-                    text = "BMI & BSA",
+                    text = "BMI",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (selectedTab1 == 0) Color(0xFF0856A8) else Color.Gray,
@@ -127,6 +127,14 @@ fun HealthIndex() {
         }
         LazyColumn(modifier = Modifier.weight(1f)) {
             item {
+                if(selectedTab1 == 0)
+                {
+                    BMI()
+                }
+                if(selectedTab1 == 1)
+                {
+                    Huyetap()
+                }
 
             }
         }
