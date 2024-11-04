@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,14 +40,29 @@ import com.example.yte.AppBarView
 import com.example.yte.R
 @Composable
 fun Payment(navController: NavController){
-    var balance by remember { mutableStateOf("0") }
+    var balance by remember { mutableStateOf("") }
+    var money by remember { mutableStateOf("") }
+
+    val confirmButton = @Composable {
+        Button(
+            onClick = { /* TODO: Xử lý sự kiện xác nhận */ },
+            modifier = Modifier.padding(start = 80.dp).height(56.dp)
+        ) {
+            Text(text = "Xác nhận")
+        }
+    }
+
+
+    fun onMoneyChange(newMoney: String){
+        money = newMoney
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         AppBarView(
-            title = "Nạp tiền" ,
-            color = R.color.white ,
-            backgroundColor = R.color.darkblue ,
+            title = "Nạp tiền",
+            color = R.color.white,
+            backgroundColor = R.color.darkblue,
             alignment = Alignment.Center,
-            onDeleteNavClicked = {navController.popBackStack()}
+            onDeleteNavClicked = { navController.popBackStack() }
         )
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -52,7 +70,8 @@ fun Payment(navController: NavController){
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()) {
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Box(
                     modifier = Modifier
@@ -69,145 +88,47 @@ fun Payment(navController: NavController){
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "$balance vnđ",
+                    text = "${if (balance.isNotEmpty()) balance.toIntOrNull() ?: 0 else 0}.000vnđ",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.cam)
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                    contentAlignment = Alignment.Center) {
-                    Image(
-                        painter = painterResource(id =R.drawable.qrpayment ),
-                        contentDescription = null,
-                        modifier = Modifier.size(120.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier.height(24.dp)
-                ) {
-
-                        Row {
-                            Text(text = "Ngân hàng: ", fontWeight = FontWeight.Bold, color = Color.Gray)
-                            Text(
-                                text = "Ví điện tử Momo",
-                                color = Color.Red,
-                                fontWeight = FontWeight.Bold
-                            )
+        Spacer(modifier = Modifier.height(40.dp))
+       Text(
+           text = "  Đơn vị: 1000vnđ",
+           fontSize = 16.sp,
+           fontWeight = FontWeight.Bold,
+           color = colorResource(id = R.color.darkblue)
+       )
+        Text(
+            text = "  ví dụ bạn muốn nạp 300.000vnd thì nhập số 300",
+            color = Color.Gray,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Row {
+            Text(
+                text = "  Số lượng:",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+                )
+            OutlinedTextField(
+                // Hiển thị balance dưới dạng chuỗi
+                value = money,
+                onValueChange = { newValue ->
+                    // Chỉ chấp nhận giá trị là số hoặc chuỗi rỗng
+                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                        onMoneyChange(newValue)
                     }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(modifier = Modifier.height(24.dp)) {
-                    Row {
-                        Text(text = "Số tài khoản: ", fontWeight = FontWeight.Bold, color = Color.Gray)
-                        Text(
-                            text = "99MM23365M51459530",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(modifier = Modifier.height(24.dp)) {
-                    Row {
-                        Text(text = "Chủ tài khoản: ", fontWeight = FontWeight.Bold, color = Color.Gray)
-                        Text(
-                            text = "MOMO_LE CONG BAO NGOC",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(modifier = Modifier.height(24.dp)) {
-                    Row {
-                        Text(text = "Tối thiểu: ", fontWeight = FontWeight.Bold, color = Color.Gray)
-                        Text(
-                            text = "10,000vnđ",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(modifier = Modifier
-                    .height(24.dp)
-                    .background(Color(0xFFededed))
-                   ) {
-                    Row( ) {
-                        Text(text = "Nội dung chuyển: ", fontWeight = FontWeight.Bold,)
-                        Text(
-                            text = "bn01",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(40.dp))
-                Row {
-                    Text(
-                        text = " -> ",
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-
-                        )
-                    Text(
-                        text = " Chú ý: Khi nhập tiền phải nhập đúng nội dung chuyển tiền, nếu không tiền sẽ không về tài khoản",
-                        color = colorResource(id = R.color.cam),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-
-                        )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Text(
-                        text = " -> ",
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-
-                        )
-                    Text(
-                        text = " Nếu sau 10p tiền không vào ví, liên hệ 'SĐT: 0329645776' để giải quyết",
-                        color = colorResource(id = R.color.cam),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-
-                        )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                ) {
-                    Column {
-                        Text(
-                            text = "  Lịch sử nạp tiền:",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-
-                        }
-                    }
-                }
-            }
+                },
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .width(100.dp)
+                    .height(56.dp)
+            )
+            confirmButton()
         }
     }
 }

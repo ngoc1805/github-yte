@@ -58,6 +58,11 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.0.2")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
+    implementation(fileTree(mapOf(
+        "dir" to "C:\\Users\\Admin\\Downloads\\ZaloPay_lib",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
