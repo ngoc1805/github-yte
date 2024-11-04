@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +38,7 @@ import com.example.yte.R
 
 @Composable
 fun Home(navController: NavController){
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by rememberSaveable { mutableStateOf(0) }
     var color by remember { mutableStateOf(R.color.black) }
     var appbarBackgroundColor by remember { mutableStateOf(R.color.white) }
     var titles by remember{ mutableStateOf(" Xin chào") }
@@ -49,12 +50,12 @@ fun Home(navController: NavController){
             color = color,
             backgroundColor = appbarBackgroundColor,
             alignment = alignment,
-            onDeleteNavClicked = {/* todo xu ly su kien tai day*/}
+
             )
         LazyColumn(  modifier = Modifier.weight(1f)) {
             item {
                 if(selectedTab == 0){
-                    HomeScreen()
+                    HomeScreen(navController)
                     color = R.color.black
                     appbarBackgroundColor = R.color.white
                     titles = "Xin chào Lê Công Bảo Ngọc"
@@ -241,8 +242,3 @@ fun Home(navController: NavController){
 
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun HomePreview(){
-//    Home()
-//}

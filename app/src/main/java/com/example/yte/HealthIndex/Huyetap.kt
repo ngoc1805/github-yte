@@ -65,8 +65,8 @@ fun Huyetap(){
             "Huyết áp bình thường" -> colorResource(id = R.color.darkblue)
             "Huyết áp cao bình thường" -> colorResource(id = R.color.darkblue)
             "Huyết áp tăng vừa (cấp độ 1)" -> colorResource(id = R.color.cam)
-            "Huyết áp tăng vừa (cấp độ 2)" -> colorResource(id = R.color.maudo)
-            "Huyết áp tăng nghiêm trọng (cấp độ 3)" -> colorResource(id = R.color.mauhong)
+            "Huyết áp tăng vừa (cấp độ 2)" -> colorResource(id = R.color.mauhong)
+            "Huyết áp tăng nghiêm trọng (cấp độ 3)" -> colorResource(id = R.color.maudo)
             else -> Color.White
         }
     } else {
@@ -76,7 +76,7 @@ fun Huyetap(){
     fun tinhHuyetap(){
         val TamthuInt = Tamthu.toIntOrNull() ?: 0
         val TamtruongInt = Tamtruong.toIntOrNull() ?: 0
-        if(TamthuInt < 120 && TamtruongInt < 80)
+        if(TamthuInt in 1..120 && TamtruongInt in 1..80)
         {
             Huyetap = "Huyết áp tối ưu"
             Huyetapnote = "Tuy nhiên, bạn vẫn cần phải theo dõi thường xuyên"
@@ -101,10 +101,15 @@ fun Huyetap(){
             Huyetap = "Huyết áp tăng vừa (cấp độ 2)"
             Huyetapnote = "Đi khám tại CSYT gần nhất"
         }
-        else if(TamthuInt in 160..179 || TamtruongInt in 100..109)
+        else if(TamthuInt >= 180 || TamtruongInt >=110)
         {
             Huyetap = "Huyết áp tăng nghiêm trọng (cấp độ 3)"
             Huyetapnote = "Đi khám tại CSYT gần nhất"
+        }
+        else
+        {
+            Huyetap = ""
+            Huyetapnote = ""
         }
     }
 

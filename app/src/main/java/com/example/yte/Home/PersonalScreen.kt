@@ -46,11 +46,19 @@ fun PersonalScreen(navController: NavController){
     FirstCard()
     SecondCard(navController= navController)
     Spacer(modifier = Modifier.height(16.dp))
+    setCard(
+        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_monetization_on_24),
+        text = "Nạp tiền",
+        onClick = {navController.navigate("Payment")}
+        )
+    Spacer(modifier = Modifier.height(24.dp))
     setCard(imageVector = Icons.Default.Lock, text = "Đổi mật khẩu")
     Spacer(modifier = Modifier.height(2.dp))
     setCard(imageVector = Icons.Default.Delete, text = "Xóa tài khoản")
     Spacer(modifier = Modifier.height(2.dp))
-    setCard(imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout_24), text = "Đăng xuất")
+    setCard(
+        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout_24),
+        text = "Đăng xuất")
 
 
 }
@@ -109,7 +117,9 @@ fun SecondCard(navController: NavController){
             Spacer(modifier = Modifier.height(4.dp))
             Row {
                 //button1
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier
+                    .weight(1f)
+                    .clickable { navController.navigate("HealthRecords") }, contentAlignment = Alignment.Center) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
@@ -153,7 +163,8 @@ fun SecondCard(navController: NavController){
                     }
                 }
                 //button3
-                Box(modifier = Modifier.weight(1f)
+                Box(modifier = Modifier
+                    .weight(1f)
                     .clickable { navController.navigate("HealthIndex") }, contentAlignment = Alignment.Center) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

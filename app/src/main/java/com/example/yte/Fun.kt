@@ -38,6 +38,7 @@ fun AppBarView(
     alignment: Alignment,
     onDeleteNavClicked: () -> Unit = {},
 
+
 ) {
     TopAppBar(
         backgroundColor = colorResource(id = backgroundColor),
@@ -82,6 +83,7 @@ fun AppBarView(
 
                     }
                 }
+                //
                 if (title.contains("Chỉ số sức khỏe")){
                     IconButton(
                         onClick = onDeleteNavClicked,
@@ -94,6 +96,59 @@ fun AppBarView(
 
                     }
                 }
+                //
+                if (title.contains("Hồ sơ sức khỏe")){
+                    IconButton(
+                        onClick = onDeleteNavClicked,
+                        modifier = Modifier.align(Alignment.BottomStart)) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = "ArrowBack Icon"
+                        )
+
+                    }
+                }
+                //
+                if (title.contains("Nạp tiền")){
+                    IconButton(
+                        onClick = onDeleteNavClicked,
+                        modifier = Modifier.align(Alignment.BottomStart)) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = "ArrowBack Icon"
+                        )
+
+                    }
+                }
+                //
+                if (title.contains("Đặt lịch khám")){
+                    IconButton(
+                        onClick = onDeleteNavClicked,
+                        modifier = Modifier.align(Alignment.BottomStart)) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = "ArrowBack Icon"
+                        )
+
+                    }
+                }
+                //
+                if (title.contains("Chọn bác sĩ")){
+                    IconButton(
+                        onClick = onDeleteNavClicked,
+                        modifier = Modifier.align(Alignment.BottomStart)) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = "ArrowBack Icon"
+                        )
+
+                    }
+                }
+                //
             }
         }
     )

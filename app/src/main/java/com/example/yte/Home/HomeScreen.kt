@@ -38,15 +38,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.yte.R
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(navController: NavController){
     ImageSlider()
     Spacer(modifier = Modifier.height(32.dp))
-    ButtonGrid()
+    ButtonGrid(navController)
 }
 
 
@@ -83,10 +84,11 @@ fun CustomButtons(
     icon: Painter,
     text: String,
     isSelected: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteNavClicked: () -> Unit = {},
     ) {
     Button(
-            onClick = { /*TODO*/ },
+            onClick = { onDeleteNavClicked() },
             modifier = modifier
                 .clip(RoundedCornerShape(50.dp))
                 .height(50.dp),
@@ -120,7 +122,7 @@ fun CustomButtons(
 }
 
 @Composable
-fun ButtonGrid(){
+fun ButtonGrid(navController: NavController){
     Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,12 +133,14 @@ fun ButtonGrid(){
                 icon = painterResource(id = R.drawable.datlichkham),
                 text = "Đặt lịch khám",
                 isSelected = true,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onDeleteNavClicked = { navController.navigate("Booking")}
             )
         CustomButtons(
                 icon = painterResource(id = R.drawable.hososuckhoe),
                 text = "Hồ sơ sức khỏe",
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onDeleteNavClicked = { navController.navigate("HealthRecords")}
             )
         }
     Spacer(modifier = Modifier.height(12.dp))
@@ -159,9 +163,9 @@ fun ButtonGrid(){
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview(){
-   ButtonGrid()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview(){
+//   ButtonGrid()
+//}
 

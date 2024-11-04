@@ -29,17 +29,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.yte.AppBarView
 import com.example.yte.R
 @Composable
-fun HealthIndex() {
+fun HealthIndex(navController: NavController) {
     var selectedTab1 by remember { mutableStateOf(0) }
+    var images by remember { mutableStateOf( R.drawable.healthindex) }
     Column(modifier = Modifier.fillMaxSize()) {
         AppBarView(
             title = "Chỉ số sức khỏe",
             color = R.color.white,
             backgroundColor = R.color.darkblue,
-            alignment = Alignment.Center
+            alignment = Alignment.Center,
+            onDeleteNavClicked = {navController.popBackStack()},
+
         )
         Box(
             modifier = Modifier
@@ -48,7 +52,7 @@ fun HealthIndex() {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.healthindex) ,
+                painter = painterResource(id = images) ,
                 contentDescription = null,
                 modifier = Modifier.size(56.dp)
             )
@@ -129,11 +133,18 @@ fun HealthIndex() {
             item {
                 if(selectedTab1 == 0)
                 {
+                    images = R.drawable.healthindex
                     BMI()
                 }
                 if(selectedTab1 == 1)
                 {
+                    images = R.drawable.bloodpressure
                     Huyetap()
+                }
+                if(selectedTab1 == 2)
+                {
+                    images = R.drawable.bodytemperature
+                    Temperature()
                 }
 
             }
@@ -141,8 +152,8 @@ fun HealthIndex() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HealthIndexPrivuew(){
-    HealthIndex()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HealthIndexPrivuew(){
+//    HealthIndex()
+//}

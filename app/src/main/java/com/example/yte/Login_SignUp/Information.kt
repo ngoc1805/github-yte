@@ -22,12 +22,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.yte.AppBarView
 
 import com.example.yte.R
 
 @Composable
-fun Information(){
+fun Information(navController: NavController){
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -35,7 +36,9 @@ fun Information(){
             title = "Thông tin cá nhân",
             color = R.color.white  ,
             backgroundColor = R.color.darkblue ,
-            alignment = Alignment.Center
+            alignment = Alignment.Center,
+            onDeleteNavClicked = {},
+
         )
         Spacer(modifier = Modifier.height(24.dp))
         QRCard()
@@ -73,8 +76,8 @@ fun QRCard(onClick: () -> Unit = {}){
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InforPreview(){
-    Information()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun InforPreview(){
+//    Information()
+//}
