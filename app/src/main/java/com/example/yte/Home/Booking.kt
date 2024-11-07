@@ -45,7 +45,7 @@ fun Booking(navController: NavController){
         "Khoa răng hàm mặt",
         "Khoa da liễu",
         "Khoa thần kinh",
-        "Khoa ung bứu"
+        "Khoa ung bướu"
     )
     val OutpatientClinicDetail = listOf(
         "chuyên khám và điều trị các bệnh về nội tạng, tim mạch, tiêu hóa, hô hấp, thần kinh,...",
@@ -125,31 +125,6 @@ fun ClinicCard(title: String, detail: String,  onClick: () -> Unit = {}){
     }
 }
 
-@Composable
-fun ClinicDetailScreen(clinicName: String, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
 
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        AppBarView(
-            title = "Chọn bác sĩ",
-            color = R.color.white ,
-            backgroundColor = R.color.darkblue,
-            alignment = Alignment.Center,
-            onDeleteNavClicked = {navController.popBackStack()}
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Bác sĩ $clinicName",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-    }
-}
 
 

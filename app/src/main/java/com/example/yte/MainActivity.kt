@@ -2,6 +2,7 @@ package com.example.yte
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.StrictMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,9 +19,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.yte.APIs.ClinicDetailScreen
+import com.example.yte.APIs.Doctor
 import com.example.yte.HealthIndex.HealthIndex
 import com.example.yte.Home.Booking
-import com.example.yte.Home.ClinicDetailScreen
 import com.example.yte.Home.HealthRecords
 import com.example.yte.Home.Home
 import com.example.yte.Home.Payment
@@ -33,6 +35,10 @@ import com.example.yte.ui.theme.YTETheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        // ZaloPay SDK Init
+//        ZaloPaySDK.init(2553, Environment.SANDBOX)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         enableEdgeToEdge()
         setContent {

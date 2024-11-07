@@ -2,11 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 android {
     namespace = "com.example.yte"
     compileSdk = 34
+
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi"
+    }
 
     defaultConfig {
         applicationId = "com.example.yte"
@@ -63,6 +68,8 @@ dependencies {
         "include" to listOf("*.aar", "*.jar"),
         "exclude" to listOf("")
     )))
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
@@ -103,6 +110,7 @@ dependencies {
 
 //    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.activity:activity-compose:1.8.0")
+    implementation ("com.google.accompanist:accompanist-pager:0.23.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

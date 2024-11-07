@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -31,26 +32,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yte.AppBarView
 import com.example.yte.R
+class paymentViewModel : ViewModel() {
+    var balance by mutableStateOf("")
+        private set
+    var money by mutableStateOf("")
+        private set
+    fun onBalanceChanged( newBalance : String){
+        balance = newBalance
+    }
+    fun onMoneyChanged( newMoney : String){
+        money = newMoney
+    }
+}
 @Composable
-fun Payment(navController: NavController){
+fun Payment(navController: NavController, viewModel: paymentViewModel = viewModel()){
     var balance by remember { mutableStateOf("") }
     var money by remember { mutableStateOf("") }
 
     val confirmButton = @Composable {
         Button(
             onClick = { /* TODO: Xử lý sự kiện xác nhận */ },
-            modifier = Modifier.padding(start = 80.dp).height(56.dp)
+            modifier = Modifier.padding(start = 8.dp).height(56.dp)
         ) {
             Text(text = "Xác nhận")
         }
     }
+
 
 
     fun onMoneyChange(newMoney: String){
@@ -116,17 +133,13 @@ fun Payment(navController: NavController){
                 )
             OutlinedTextField(
                 // Hiển thị balance dưới dạng chuỗi
-                value = money,
-                onValueChange = { newValue ->
-                    // Chỉ chấp nhận giá trị là số hoặc chuỗi rỗng
-                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                        onMoneyChange(newValue)
-                    }
-                },
+                value = viewModel.money ,
+                onValueChange = { viewModel.onMoneyChanged(it)},
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .width(100.dp)
-                    .height(56.dp)
+                    .width(200.dp)
+                    .height(56.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             confirmButton()
         }
