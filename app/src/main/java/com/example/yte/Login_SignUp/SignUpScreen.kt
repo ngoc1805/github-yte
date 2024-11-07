@@ -159,9 +159,8 @@ fun SignUpScreen(
                 Button(
                     onClick = {
                         viewModel.validateAndSignUp()
-                         if(viewModel.isSignUpSuccessful == true)navController.navigate("Information")
-
-
+                         if(viewModel.isSignUpSuccessful == true)
+                             navController.navigate("Information")
                               },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF))

@@ -129,36 +129,36 @@ fun WeekDaysRow(){
 
     val pagerState = rememberPagerState()
 
-    HorizontalPager(
-        count = weeks.size,
-        state = pagerState,
-        modifier = Modifier.fillMaxWidth()
-    ) { page ->
-        WeekRow(week = weeks[page])
-
-        // Thêm tuần mới khi cuộn đến trang cuối
-        if (page == weeks.size - 1) {
-            calendar.add(Calendar.WEEK_OF_YEAR, 1)
-            weeks.add(getWeekDays(calendar.clone() as Calendar))
-        }
-    }
-
-//    LazyRow(
+//    HorizontalPager(
+//        count = weeks.size,
+//        state = pagerState,
+//        modifier = Modifier.fillMaxWidth()
+//    ) { page ->
+//        WeekRow(week = weeks[page])
 //
-//    ) {
-//        itemsIndexed(weeks) { index, week ->
-//            // Hiển thị một tuần
-//            WeekRow(week = week)
-//            Spacer(modifier = Modifier.width(24.dp))
-//
-//            // Khi đến gần cuối danh sách, thêm tuần mới
-//            if (index == weeks.size - 1) {
-//                // Thêm một tuần mới khi lướt đến cuối
-//                weeks.add(getWeekDays(calendar.clone() as Calendar))
-//                calendar.add(Calendar.WEEK_OF_YEAR, 1)
-//            }
+//        // Thêm tuần mới khi cuộn đến trang cuối
+//        if (page == weeks.size - 1) {
+//            calendar.add(Calendar.WEEK_OF_YEAR, 1)
+//            weeks.add(getWeekDays(calendar.clone() as Calendar))
 //        }
 //    }
+
+    LazyRow(
+
+    ) {
+        itemsIndexed(weeks) { index, week ->
+            // Hiển thị một tuần
+            WeekRow(week = week)
+            Spacer(modifier = Modifier.width(24.dp))
+
+            // Khi đến gần cuối danh sách, thêm tuần mới
+            if (index == weeks.size - 1) {
+                // Thêm một tuần mới khi lướt đến cuối
+                weeks.add(getWeekDays(calendar.clone() as Calendar))
+                calendar.add(Calendar.WEEK_OF_YEAR, 1)
+            }
+        }
+    }
 }
 @Preview(showBackground = true)
 @Composable

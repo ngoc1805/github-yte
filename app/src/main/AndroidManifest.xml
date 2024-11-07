@@ -18,11 +18,26 @@
         android:theme="@style/Theme.YTE"
         tools:targetApi="31" >
         <activity
+            android:name=".Home.OrderPayment"
+            android:exported="true"
+            android:label="Merchant Demo"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app"
+                    android:scheme="demozpdk" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.YTE" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,5 +45,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

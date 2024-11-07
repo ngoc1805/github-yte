@@ -69,7 +69,7 @@ class SignUpViewModel : ViewModel() {
              else -> null
          }
 
-         isSignUpSuccessful ==
+         isSignUpSuccessful =
                  isPhoneNotEmpty
                  && isPhoneVailiLength
                  && isPhoneNumberIc

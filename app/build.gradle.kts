@@ -63,13 +63,16 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.0.2")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
+
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
     implementation(fileTree(mapOf(
-        "dir" to "C:\\Users\\Admin\\Downloads\\ZaloPay_lib",
+        "dir" to "D:\\ZaloPay_lib",
         "include" to listOf("*.aar", "*.jar"),
         "exclude" to listOf("")
     )))
-    implementation("com.squareup.okhttp3:okhttp:4.6.0")
-    implementation("commons-codec:commons-codec:1.14")
+
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
