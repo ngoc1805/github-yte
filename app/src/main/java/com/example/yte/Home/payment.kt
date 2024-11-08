@@ -204,18 +204,18 @@ fun Payment(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Đơn vị: 1000 vnđ",
+            text = "Nhập số tiền muốn nạp xuống ô bên dưới",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.darkblue),
             modifier = Modifier.padding(start = 8.dp)
         )
 
-        Text(
-            text = "Ví dụ: nhập 300 để nạp 300.000 vnđ",
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-            modifier = Modifier.padding(start = 8.dp)
-        )
+//        Text(
+//            text = "Ví dụ: nhập 300 để nạp 300.000 vnđ",
+//            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+//            modifier = Modifier.padding(start = 8.dp)
+//        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -223,7 +223,7 @@ fun Payment(
         OutlinedTextField(
             value = money,
             onValueChange = { viewModel.onMoneyChanged(it) },
-            label = { Text("Số lượng") },
+            label = { Text("Số tiền") },
             modifier = Modifier
                 .padding(8.dp)
                 .width(150.dp)

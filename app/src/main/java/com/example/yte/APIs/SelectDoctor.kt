@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.example.yte.AppBarView
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yte.Home.WeekDaysRow
 import com.example.yte.R
@@ -101,14 +102,15 @@ fun DoctorCard(doctor: Doctor){
             Column {
                 Text(
                     text = doctor.hoten,
-                    fontSize = 20.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Box {
                     Text(
                         text = "Khoa: ${doctor.khoa}",
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        color = Color.Gray
                     )
 
                 }

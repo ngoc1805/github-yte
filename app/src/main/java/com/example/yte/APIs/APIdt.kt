@@ -13,7 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import java.net.URLEncoder
 
-val address = "http://10.0.2.2:8080/"
+val address = "http://192.168.0.101:8080/"
 
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
