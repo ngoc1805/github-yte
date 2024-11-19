@@ -1,4 +1,4 @@
-package com.example.yte.Home
+package com.example.yte.Appointment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,14 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.contentColorFor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,18 +27,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.*
 import com.example.yte.R
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 
 data class Day(
     val name: String,
     val date: String,
+    val fullDate: String,
     val isPast: Boolean = false,
     var isSelected: Boolean = false
 )
@@ -48,6 +46,7 @@ data class Day(
 fun getWeekDays(startDate: Calendar) : List<Day>{
     val daysOfWeek = mutableListOf<Day>()
     val dateFormat = SimpleDateFormat("dd/MM", Locale.getDefault())
+    val fullDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val today = Calendar.getInstance()
 
 
@@ -57,11 +56,12 @@ fun getWeekDays(startDate: Calendar) : List<Day>{
 
     for (i in 0..6) {
         val dayName = if (i == 6) "CN" else "T${i + 2}" // "T2", "T3", ..., "CN"
+        val fullDate = fullDateFormat.format(calendar.time)
         val date = dateFormat.format(calendar.time)
-        val isPast = calendar.before(today) && calendar.get(Calendar.DAY_OF_YEAR) != today.get(Calendar.DAY_OF_YEAR)
+        val isPast = calendar.before(today) && calendar.get(Calendar.DAY_OF_YEAR) != today.get(Calendar.DAY_OF_YEAR)|| dayName == "CN"
         val isSelected = calendar.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
-        daysOfWeek.add(Day(name = dayName, date = date, isPast = isPast, isSelected = isSelected))
+        daysOfWeek.add(Day(name = dayName, date = date,fullDate = fullDate, isPast = isPast, isSelected = isSelected))
         calendar.add(Calendar.DAY_OF_MONTH, 1)
     }
     return daysOfWeek
@@ -82,7 +82,12 @@ fun getWeeks(numWeeks: Int):  List<List<Day>>{
 }
 
 @Composable
-fun DayItem(day: Day, onClick: (Day) -> Unit) {
+fun DayItem(
+    day: Day,
+    appointmentViewModel: AppointmentViewModel = viewModel(),
+    onClick: (Day) -> Unit,
+
+    ) {
     Box(
         modifier = Modifier
             .padding(2.dp)
@@ -139,15 +144,51 @@ fun WeekRow(week: List<Day>, onDaySelected: (Day) -> Unit) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WeekDaysRow(){
+fun WeekDaysRow(onDaySelected: (Day) -> Unit){
     val weeks = remember { mutableStateListOf<List<Day>>() }
     val calendar = Calendar.getInstance()
     val selectedDay = remember { mutableStateOf<Day?>(null) }
+    val today = remember { mutableStateOf<Day?>(null) }
 
     LaunchedEffect(Unit) {
         repeat(1) {
-            weeks.add(getWeekDays(calendar.clone() as Calendar))
+            val weekDays = getWeekDays(calendar.clone() as Calendar)
+
+            weeks.add(weekDays)
+            today.value = weekDays.firstOrNull { it.isSelected } // Đánh dấu ngày hôm nay
+
+            // Đặt ngày hôm nay là ngày được chọn ban đầu
+            selectedDay.value = today.value
+            selectedDay.value?.let { onDaySelected(it) }
             calendar.add(Calendar.WEEK_OF_YEAR, 1)
+        }
+    }
+
+    LazyRow {
+        itemsIndexed(weeks) { index, week ->
+            WeekRow(week = week) { day ->
+                // Cập nhật danh sách tuần với ngày được chọn
+                val updatedWeeks = weeks.map { weekList ->
+                    weekList.map { currentDay ->
+                        if (currentDay == day) {
+                            currentDay.copy(isSelected = true)
+                        } else {
+                            currentDay.copy(isSelected = false)
+                        }
+                    }
+                }
+                weeks.clear()
+                weeks.addAll(updatedWeeks)
+
+                selectedDay.value = day
+                onDaySelected(day) // Truyền ngày được chọn lên `ClinicDetailScreen`
+            }
+            Spacer(modifier = Modifier.width(24.dp))
+
+            if (index == weeks.size - 1) {
+                weeks.add(getWeekDays(calendar.clone() as Calendar))
+                calendar.add(Calendar.WEEK_OF_YEAR, 1)
+            }
         }
     }
 
@@ -186,33 +227,12 @@ fun WeekDaysRow(){
 //    }
 
 
-    LazyRow {
-        itemsIndexed(weeks) { index, week ->
-            WeekRow(week = week) { day ->
-                // Cập nhật danh sách tuần với ngày được chọn
-                val updatedWeeks = weeks.map { weekList ->
-                    weekList.map { currentDay ->
-                        currentDay.copy(isSelected = currentDay == day)
-                    }
-                }
-                weeks.clear()
-                weeks.addAll(updatedWeeks)
 
-                selectedDay.value = day
-            }
-            Spacer(modifier = Modifier.width(24.dp))
-
-            if (index == weeks.size - 1) {
-                weeks.add(getWeekDays(calendar.clone() as Calendar))
-                calendar.add(Calendar.WEEK_OF_YEAR, 1)
-            }
-        }
-    }
 }
-@Preview(showBackground = true)
-@Composable
-fun WeekDaysRowPR(){
-    WeekDaysRow()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun WeekDaysRowPR(){
+//    WeekDaysRow()
+//}
 
 

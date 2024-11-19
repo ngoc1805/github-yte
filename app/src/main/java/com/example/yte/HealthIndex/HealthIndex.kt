@@ -43,6 +43,7 @@ fun HealthIndex(navController: NavController) {
             backgroundColor = R.color.darkblue,
             alignment = Alignment.Center,
             onDeleteNavClicked = {navController.popBackStack()},
+            isVisible = true
 
         )
         Box(

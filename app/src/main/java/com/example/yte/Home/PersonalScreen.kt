@@ -39,7 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.yte.IdTaiKhoan
 import com.example.yte.R
+import com.example.yte.hoTen
+import com.example.yte.isLogin
 
 @Composable
 fun PersonalScreen(navController: NavController){
@@ -58,7 +61,13 @@ fun PersonalScreen(navController: NavController){
     Spacer(modifier = Modifier.height(2.dp))
     setCard(
         imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout_24),
-        text = "Đăng xuất")
+        text = "Đăng xuất",
+        onClick = {
+            IdTaiKhoan = 0
+            isLogin = false
+            navController.navigate("LoginSignUpScreen")
+        }
+    )
 
 
 }
@@ -80,7 +89,7 @@ fun FirstCard(){
                 .background(Color(0xFFE0E0E0), shape = CircleShape),
                 contentAlignment = Alignment.Center) {
                 Image(
-                    painter = painterResource(id = R.drawable.ngoc),
+                    painter = painterResource(id = R.drawable.anhtrang),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -90,7 +99,7 @@ fun FirstCard(){
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = "Lê Công Bảo Ngọc",
+                text = "$hoTen",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray

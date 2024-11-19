@@ -1,4 +1,4 @@
-package com.example.yte.APIs
+package com.example.yte.Appointment
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -6,14 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.yte.address
+import com.example.yte.ipCuaNgoc
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.net.URLEncoder
 
-val address = "http://192.168.0.101:8080/"
+
 
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
@@ -30,6 +31,7 @@ interface APIdt {
 class DoctorViewModel : ViewModel() {
     var doctorList by mutableStateOf<List<Doctor>>(emptyList())
         private set
+    val isLoading = mutableStateOf(false)
 
     fun fetchDoctors(clinicName: String) {
         Log.d("DoctorViewModel", "fetchDoctors called with clinicName: $clinicName")

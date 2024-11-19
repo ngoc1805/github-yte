@@ -4,32 +4,36 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.IntOffset
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.yte.R
 import com.example.yte.keyboardAsState
 import kotlin.math.roundToInt
 
 @Composable
-fun LoginSignUpScreen(navController: NavController) {
+fun LoginSignUpScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = viewModel(),
+    signUpViewModel: SignUpViewModel = viewModel()
+) {
     var isLogin by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by rememberSaveable { mutableStateOf(0) }
 
 
     val isKeyboardVisible by keyboardAsState()
@@ -112,16 +116,32 @@ fun LoginSignUpScreen(navController: NavController) {
                         selectedTabIndex = selectedTab,
                         backgroundColor = Color.White,
                         contentColor = Color.Blue,
+                        indicator = { tabPositions ->
+                            // Chỉ định thanh chỉ báo cho Tab được chọn
+                            TabRowDefaults.Indicator(
+                                Modifier
+                                    .tabIndicatorOffset(tabPositions[selectedTab])
+                                    .height(0.dp) // Không cần chỉ báo hiển thị trên ảnh mẫu
+                            )
+                        }
                     ) {
                         Tab(
                             selected = selectedTab == 0,
                             onClick = { selectedTab = 0 },
-                            text = { Text("Đăng nhập", fontSize = 18.sp) }
+                            text = { Text("Đăng nhập",
+                                fontSize = 18.sp,
+                                color = colorResource(id = R.color.darkblue),
+                                fontWeight = FontWeight.Bold
+                                ) }
                         )
                         Tab(
                             selected = selectedTab == 1,
                             onClick = { selectedTab = 1 },
-                            text = { Text("Đăng ký", fontSize = 18.sp) }
+                            text = { Text("Đăng ký",
+                                fontSize = 18.sp,
+                                color = colorResource(id = R.color.darkblue),
+                                fontWeight = FontWeight.Bold
+                            ) }
                         )
                     }
 
@@ -131,15 +151,17 @@ fun LoginSignUpScreen(navController: NavController) {
                     if (selectedTab == 0) {
                         // Show Login Form
                         image = R.drawable.background1
-                        arrowdownColor = Color.Blue
+                        arrowdownColor = colorResource(id = R.color.darkblue)
 //                        LoginForm(viewModel = viewModel)
-                       LoginScreen()
+                        LoginScreen(navController = navController)
+                        signUpViewModel.reset()
                     } else {
                         // Show Sign Up Form
 
                         image = R.drawable.background2
-                        arrowdownColor = Color.Yellow
-                        SignUpScreen(navController = navController)
+                        arrowdownColor = colorResource(id = R.color.cam)
+                        SignUpScreen(navController = navController, viewModel = signUpViewModel)
+                        loginViewModel.reset()
                     }
                 }
             }

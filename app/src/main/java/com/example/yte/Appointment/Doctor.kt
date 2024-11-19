@@ -1,4 +1,4 @@
-package com.example.yte.APIs
+package com.example.yte.Appointment
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

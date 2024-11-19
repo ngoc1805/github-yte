@@ -26,7 +26,8 @@ fun HealthRecords(navController: NavController){
             color = R.color.white,
             backgroundColor = R.color.darkblue,
             alignment = Alignment.Center,
-            onDeleteNavClicked = {/*todo*/ navController.popBackStack()}
+            onDeleteNavClicked = {/*todo*/ navController.popBackStack()},
+            isVisible = true
             )
         Spacer(modifier = Modifier.height(16.dp))
         //

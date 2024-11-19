@@ -11,7 +11,9 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,13 +21,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.yte.DismissKeyboard
+import com.example.yte.IdTaiKhoan
 import com.example.yte.R
+import com.example.yte.hoTen
+import com.example.yte.isLogin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    viewModel: LoginViewModel = viewModel(),
+    taiKhoanViewModel: TaiKhoanViewModel = viewModel(),
+    nguoiDungViewModel: NguoiDungViewModel = viewModel(),
+    navController: NavController
+) {
     var passwordVisible by remember { mutableStateOf(false) } // Quản lý trạng thái hiển thị/ẩn mật khẩu
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogMessage by remember { mutableStateOf("") }
 DismissKeyboard {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -53,6 +70,13 @@ DismissKeyboard {
                         label = { Text("Số điện thoại") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = colorResource(id = R.color.darkblue),    // Màu của đường viền khi trường được chọn
+                            unfocusedBorderColor = Color.Gray,                            // Màu của đường viền khi trường không được chọn
+                            focusedLabelColor = colorResource(id = R.color.darkblue),     // Màu của nhãn khi trường được chọn
+                            unfocusedLabelColor = Color.Gray,                             // Màu của nhãn khi trường không được chọn
+                            cursorColor = Color.Gray                                      // Màu của con trỏ
+                        ),
                         isError = viewModel.phoneNumberError != null
                     )
                     // Display phone number error if exists
@@ -88,6 +112,13 @@ DismissKeyboard {
                                 Icon(painter = image, contentDescription = if (passwordVisible) "Ẩn mật khẩu" else "Hiển thị mật khẩu")
                             }
                         },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = colorResource(id = R.color.darkblue),    // Màu của đường viền khi trường được chọn
+                            unfocusedBorderColor = Color.Gray,                            // Màu của đường viền khi trường không được chọn
+                            focusedLabelColor = colorResource(id = R.color.darkblue),     // Màu của nhãn khi trường được chọn
+                            unfocusedLabelColor = Color.Gray,                             // Màu của nhãn khi trường không được chọn
+                            cursorColor = Color.Gray                                      // Màu của con trỏ
+                        ),
                         isError = viewModel.passwordError != null
                     )
                     // Display password error if exists
@@ -103,11 +134,46 @@ DismissKeyboard {
 
                     // Login button
                     Button(
-                        onClick = { viewModel.validateAndLogin() },
+                        onClick = {
+                            viewModel.validateAndLogin()
+                            if(viewModel.isLoginSuccessful){
+                                CoroutineScope(Dispatchers.IO).launch{
+                                   taiKhoanViewModel.loGin(viewModel.numberPhone, viewModel.passWord)
+                                    taiKhoanViewModel.kq.collect {apiResponse1->
+                                        if(apiResponse1?.exists == true){
+                                            CoroutineScope(Dispatchers.IO).launch{
+                                                taiKhoanViewModel.getIdbyTenTk(viewModel.numberPhone)
+                                                taiKhoanViewModel.id.collect{IdResponse->
+                                                    IdTaiKhoan = IdResponse?.rowsDeleted ?: 0
+
+                                                    withContext(Dispatchers.Main) {
+                                                        dialogMessage = "Đăng nhập thành công $IdTaiKhoan "
+                                                        showDialog = true
+                                                        isLogin = true
+                                                    }
+
+                                                }
+                                            }
+
+//                                            dialogMessage = "Đăng nhập thành công $IdTaiKhoan"
+//                                            showDialog = true
+                                        }else{
+                                            withContext(Dispatchers.Main) {
+                                                dialogMessage = "Đăng nhập thất bại"
+                                                showDialog = true
+                                            }
+//                                            dialogMessage = "Đăng nhập thất bại"
+//                                            showDialog = true
+                                        }
+                                    }
+
+                                }
+                            }
+                                  },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF))
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.darkblue))
                     ) {
-                        Text("Đăng nhập", color = Color.White)
+                        Text("Đăng nhập", color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -121,6 +187,22 @@ DismissKeyboard {
                     )
                 }
             }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(text = "Thông báo") },
+                text = { Text(text = dialogMessage) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        navController.navigate("Home")
+                        showDialog = false
+
+                    }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
 
     }
 }
@@ -131,8 +213,8 @@ DismissKeyboard {
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    LoginScreen()
+//}

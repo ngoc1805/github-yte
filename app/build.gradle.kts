@@ -57,6 +57,19 @@ android {
 
 dependencies {
 
+    implementation ("com.google.mlkit:barcode-scanning:17.0.3")
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+
+    // Thêm các phụ thuộc khác nếu cần
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.30.1")
+
+    implementation ("com.google.accompanist:accompanist-pager:0.25.1")
+    implementation ("com.google.android.material:material:1.8.0")
+    implementation ("androidx.compose.material:material:1.4.3")
+    implementation ("androidx.compose.ui:ui:1.4.3")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.4.3")
 
     implementation ("com.google.accompanist:accompanist-pager:0.25.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")

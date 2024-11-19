@@ -30,6 +30,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 
+fun formatNumber(number: Int): String {
+    return "%,d".format(number).replace(',', '.')
+}
 @Composable
 fun AppBarView(
     title: String,
@@ -37,121 +40,160 @@ fun AppBarView(
     backgroundColor: Int,
     alignment: Alignment,
     onDeleteNavClicked: () -> Unit = {},
+    isVisible: Boolean
 
 
 ) {
-    TopAppBar(
-        backgroundColor = colorResource(id = backgroundColor),
-        elevation = 3.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp), // Tăng chiều cao của AppBar
-        title = {
-            // Dùng Box để tiêu đề ở giữa và biểu tượng thùng rác ở góc phải
-            Box(modifier = Modifier.fillMaxWidth()) {
-                // Tiêu đề căn giữa
-                Text(
-                    text = title,
-                    color = colorResource(id = color),
-                    fontSize = 20.sp, // Tăng kích thước chữ
-                    modifier = Modifier.align(alignment)
-                )
+    if (isVisible) {
+        TopAppBar(
+            backgroundColor = colorResource(id = backgroundColor),
 
-                // Biểu tượng thùng rác ở góc phải nếu tiêu đề là "Thông báo"
-                if (title.contains("Thông báo")) {
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomEnd) // Đặt biểu tượng về góc phải
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            tint = Color.White,
-                            contentDescription = "Delete Icon"
-                        )
-                    }
-                }
-                // Biểu tượng ArrowBack nếu tiêu đề là "Thông tin cá nhân"
-                if (title.contains("Thông tin cá nhân")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+            elevation = 3.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp), // Tăng chiều cao của AppBar
 
-                    }
-                }
-                //
-                if (title.contains("Chỉ số sức khỏe")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+            title = {
+                // Dùng Box để tiêu đề ở giữa và biểu tượng thùng rác ở góc phải
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    // Tiêu đề căn giữa
+                    Text(
+                        text = title,
+                        color = colorResource(id = color),
+                        fontSize = 20.sp, // Tăng kích thước chữ
+                        modifier = Modifier.align(alignment)
+                    )
 
+                    // Biểu tượng thùng rác ở góc phải nếu tiêu đề là "Thông báo"
+                    if (title.contains("Thông báo")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomEnd) // Đặt biểu tượng về góc phải
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                tint = Color.White,
+                                contentDescription = "Delete Icon"
+                            )
+                        }
                     }
-                }
-                //
-                if (title.contains("Hồ sơ sức khỏe")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+                    // Biểu tượng ArrowBack nếu tiêu đề là "Thông tin cá nhân"
+                    if (title.contains("Thông tin cá nhân")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
 
+                        }
                     }
-                }
-                //
-                if (title.contains("Nạp tiền")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+                    //
+                    if (title.contains("Chỉ số sức khỏe")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
 
+                        }
                     }
-                }
-                //
-                if (title.contains("Đặt lịch khám")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+                    //
+                    if (title.contains("Hồ sơ sức khỏe")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
 
+                        }
                     }
-                }
-                //
-                if (title.contains("Chọn bác sĩ")){
-                    IconButton(
-                        onClick = onDeleteNavClicked,
-                        modifier = Modifier.align(Alignment.BottomStart)) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = "ArrowBack Icon"
-                        )
+                    //
+                    if (title.contains("Nạp tiền")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
 
+                        }
                     }
+                    //
+                    if (title.contains("Đặt lịch khám")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
+                    if (title.contains("Chọn bác sĩ")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
+                    if (title.contains("Lịch hẹn")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.Black,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
+                    if (title.contains("Nội dung chi tiết")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
                 }
-                //
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable

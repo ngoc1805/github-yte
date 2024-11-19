@@ -19,6 +19,8 @@ class InforViewModel : ViewModel() {
     var ngayDKCCCD by mutableStateOf("")
         private set
 
+    var isSuccessful by mutableStateOf(false)
+        private set
     var nameError by mutableStateOf<String?>(null)
         private set
     var birthdayError by mutableStateOf<String?>(null)
@@ -32,32 +34,37 @@ class InforViewModel : ViewModel() {
     var ngayDKCCCDError by mutableStateOf<String?>(null)
         private set
 
-    var isSuccessful by mutableStateOf(false)
-        private set
+
 
     fun onNameChanged(newName: String){
         name = newName
+        nameError = null
     }
     fun onBirthdayChanged(newBirthday: String){
         birthday = newBirthday
+        birthdayError = null
     }
     fun onGenderChanged(newGenrder: String){
         gender = newGenrder
+        genderError = null
     }
     fun onCCCDChanged(newCCCD: String){
         CCCD = newCCCD
+        CCCDError = null
     }
     fun onQuequanChanged(newQuequan: String){
         quequan = newQuequan
+        quequanError = null
     }
     fun onNgayDKCCCDhanged(newNgayDKCCCD: String){
         ngayDKCCCD = newNgayDKCCCD
+        ngayDKCCCDError = null
     }
 
     fun validateInfor(){
         val isNameNotEmpty = name.isNotEmpty()
         val isBirthdayNotEmpty = birthday.isNotEmpty()
-        val isGenderIsNotEmpty = gender.isNotEmpty()
+        val isGenderNotEmpty = gender.isNotEmpty()
         val isCCCDIsNotEmpty = CCCD.isNotEmpty()
         val isQuequanIsNotEmpty = quequan.isNotEmpty()
         val isNgayDKCCCDisNotEmpty = ngayDKCCCD.isNotEmpty()
@@ -69,18 +76,22 @@ class InforViewModel : ViewModel() {
             !isNameNotEmpty -> "Tên không được bỏ trống"
             else -> null
         }
-        birthdayError = when{
-            !isBirthdayNotEmpty -> "Ngày sinh không được bỏ trống"
+        birthdayError = when {
+            !isBirthdayNotEmpty && !isGenderNotEmpty -> "Ngày sinh không được để trống, Giới tính không được để trống"
+            !isBirthdayNotEmpty -> "Ngày sinh không được để trống"
             else -> null
         }
-        genderError = when{
-            !isGenderIsNotEmpty -> "Giới tính không được bỏ trống"
+
+        genderError = when {
+            !isBirthdayNotEmpty && !isGenderNotEmpty -> null // Đã hiển thị lỗi chung ở birthdayError
+            !isGenderNotEmpty -> "Giới tính không được để trống"
             else -> null
         }
         CCCDError = when{
             !isCCCDIsNotEmpty -> "Số CCCD không được bỏ trống"
-            !isCCCDdValidLength -> "Số CCCD bao gồm 12 số"
             !isCCCDic -> "Số CCCD chỉ bao gồm các chữ số"
+            !isCCCDdValidLength -> "Số CCCD bao gồm 12 số"
+
             else -> null
         }
         quequanError = when{
@@ -93,8 +104,24 @@ class InforViewModel : ViewModel() {
         }
 
         isSuccessful = isNameNotEmpty && isBirthdayNotEmpty
-                && isGenderIsNotEmpty && isCCCDIsNotEmpty
+                && isGenderNotEmpty && isCCCDIsNotEmpty
                 && isQuequanIsNotEmpty && isNgayDKCCCDisNotEmpty
                 && isCCCDic && isCCCDdValidLength
     }
+    fun reset() {
+        name = ""
+        birthday = ""
+        gender = ""
+        CCCD = ""
+        quequan = ""
+        ngayDKCCCD = ""
+        isSuccessful = false
+        nameError = null
+        birthdayError = null
+        genderError = null
+        CCCDError = null
+        quequanError = null
+        ngayDKCCCDError = null
+    }
+
 }

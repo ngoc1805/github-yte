@@ -3,7 +3,13 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:usesCleartextTraffic="true"
@@ -17,6 +23,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YTE"
         tools:targetApi="31" >
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode_ui"
+            />
         <activity
             android:name=".Home.OrderPayment"
             android:exported="true"

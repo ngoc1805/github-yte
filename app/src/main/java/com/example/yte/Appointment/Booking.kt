@@ -1,6 +1,8 @@
-package com.example.yte.Home
+package com.example.yte.Appointment
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -21,14 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
 import com.example.yte.R
 @Composable
-fun Booking(navController: NavController){
+fun Booking(navController: NavController, doctorViewModel: DoctorViewModel = viewModel()){
     // Trạng thái cuộn của LazyColumn
     val listState = rememberLazyListState()
     // Kiểm tra xem dòng "Chọn khoa khám bệnh" có hiển thị không
@@ -65,7 +68,8 @@ fun Booking(navController: NavController){
             color = R.color.white,
             backgroundColor = R.color.darkblue ,
             alignment = Alignment.Center,
-            onDeleteNavClicked = { navController.popBackStack()}
+            onDeleteNavClicked = { navController.popBackStack()},
+            isVisible = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         if (isHeaderVisible) {
@@ -79,19 +83,29 @@ fun Booking(navController: NavController){
 
         }
         Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
-            items(OutpatientClinic.size){ index ->
-                ClinicCard(
-                    title = OutpatientClinic[index],
-                    detail = OutpatientClinicDetail[index],
-                    onClick = {
-                        navController.navigate("clinicDetail/${OutpatientClinic[index]}")
-                    }
-                )
+
+//        if (doctorViewModel.isLoading.value) {
+//            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                CircularProgressIndicator()
+//            }
+//        }else{
+            LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
+                items(OutpatientClinic.size){ index ->
+                    ClinicCard(
+                        title = OutpatientClinic[index],
+                        detail = OutpatientClinicDetail[index],
+                        onClick = {
+
+                            navController.navigate("clinicDetail/${OutpatientClinic[index]}")
+                        }
+                    )
+
+                }
 
             }
 
-        }
+
+
 
     }
 }

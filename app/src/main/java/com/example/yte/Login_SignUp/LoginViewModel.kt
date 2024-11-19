@@ -59,4 +59,12 @@ class LoginViewModel : ViewModel() {
         // Login successful if both phone number and password are valid
         isLoginSuccessful = isPhoneNotEmpty && isPhoneValidLength && isPhoneNumberic && isPasswordNotEmpty && isPasswordValidLength
     }
+    fun reset() {
+        numberPhone = ""
+        passWord = ""
+        isLoginSuccessful = false
+        phoneNumberError = null
+        passwordError = null
+    }
+
 }

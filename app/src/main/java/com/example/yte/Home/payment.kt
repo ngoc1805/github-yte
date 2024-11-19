@@ -10,8 +10,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -22,17 +24,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.yte.Api.CreateOrder
 import com.example.yte.AppBarView
 import com.example.yte.R
+import com.example.yte.formatNumber
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPayError
 import vn.zalopay.sdk.ZaloPaySDK
@@ -178,7 +184,8 @@ fun Payment(
             color = R.color.white,
             backgroundColor = R.color.darkblue,
             alignment = Alignment.Center,
-            onDeleteNavClicked = { navController.popBackStack() }
+            onDeleteNavClicked = { navController.popBackStack() },
+            isVisible = true
         )
 
         // Hiển thị số dư
@@ -192,8 +199,22 @@ fun Payment(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 24.dp, height = 30.dp)
+                        .background(color = Color(0xFFE0F7FA), shape = RoundedCornerShape(24.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.wallet),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${balance} vnđ",
+                    text = "${formatNumber(balance)} vnđ",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.cam)
@@ -257,4 +278,12 @@ fun Payment(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun paymentP(){
+    val navController = rememberNavController()
+
+    Payment(navController = navController )
 }

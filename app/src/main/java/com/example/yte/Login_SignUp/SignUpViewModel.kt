@@ -4,8 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel(/*private val apiService: APITaiKhoan*/) : ViewModel() {
+
+//    private val _accountExistsMessage = MutableStateFlow<String?>(null)
+//    val accountExistsMessage: StateFlow<String?> = _accountExistsMessage.asStateFlow()
+
     var phoneNumber by mutableStateOf("")
         private set
     var passWord by mutableStateOf("")
@@ -36,6 +45,23 @@ class SignUpViewModel : ViewModel() {
         confirmPassWord = newConfirmPassWork
         confirmPassWordErr = null
     }
+//    // kiem tra tai khoan ton tai
+//    fun checkIfAccountExists(onCompletion: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                val response = apiService.checkTk(phoneNumber)
+//                if (response.exists) {
+//                    _accountExistsMessage.value = "Tên tài khoản đã tồn tại"
+//                    onCompletion(false) // Không cho phép đăng ký vì tài khoản đã tồn tại
+//                } else {
+//                    onCompletion(true) // Tài khoản chưa tồn tại, cho phép đăng ký
+//                }
+//            } catch (e: Exception) {
+//                _accountExistsMessage.value = "Có lỗi xảy ra: ${e.message}"
+//                onCompletion(false)
+//            }
+//        }
+//    }
      fun validateAndSignUp(){
          val isPhoneNotEmpty = phoneNumber.isNotEmpty()
          val isPhoneVailiLength = phoneNumber.length == 10
@@ -68,17 +94,36 @@ class SignUpViewModel : ViewModel() {
              !ispassWordAndConfirmPassWordMatch -> "Xác nhận mật khẩu không khớp"
              else -> null
          }
+    isSignUpSuccessful =
+        isPhoneNotEmpty
+                && isPhoneVailiLength
+                && isPhoneNumberIc
+                && isPassWordNotEmpty
+                && isPassWordValidiLength
+                && isConfirmPassWorkNotEmpty
+                && ispassWordAndConfirmPassWordMatch
 
-         isSignUpSuccessful =
-                 isPhoneNotEmpty
-                 && isPhoneVailiLength
-                 && isPhoneNumberIc
-                 && isPassWordNotEmpty
-                 && isPassWordValidiLength
-                 && isConfirmPassWorkNotEmpty
-                 && ispassWordAndConfirmPassWordMatch
+//         if (numberPhoneErr == null && passWordErr == null && confirmPassWordErr == null) {
+//             checkIfAccountExists { accountDoesNotExist ->
+//                 if (accountDoesNotExist) {
+//                     isSignUpSuccessful = true
+//                 } else {
+//                     isSignUpSuccessful = false
+//                 }
+//             }
+//         }
 
      }
+    fun reset() {
+        phoneNumber = ""
+        passWord = ""
+        confirmPassWord = ""
+        isSignUpSuccessful = false
+        numberPhoneErr = null
+        passWordErr = null
+        confirmPassWordErr = null
+    }
+
 
 
 

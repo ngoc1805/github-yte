@@ -1,6 +1,7 @@
-package com.example.yte.APIs
+package com.example.yte.Appointment
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,22 +28,28 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.yte.Home.WeekDaysRow
 import com.example.yte.R
+import com.example.yte.formatNumber
 
 @Composable
 fun ClinicDetailScreen(
     clinicName: String,
     navController: NavController,
-    doctorViewModel : DoctorViewModel = viewModel()
+    doctorViewModel : DoctorViewModel = viewModel(),
+    appointmentViewModel: AppointmentViewModel = viewModel()
 ) {
     LaunchedEffect(clinicName) {
         doctorViewModel.fetchDoctors(clinicName)
     }
+    val isLoading = doctorViewModel.isLoading
     val doctors = doctorViewModel.doctorList
+    val selectedDate = remember { mutableStateOf<Day?>(null) } // Dùng để theo dõi ngày được chọn
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -55,7 +62,8 @@ fun ClinicDetailScreen(
             color = R.color.white ,
             backgroundColor = R.color.darkblue,
             alignment = Alignment.Center,
-            onDeleteNavClicked = {navController.popBackStack()}
+            onDeleteNavClicked = {navController.popBackStack()},
+            isVisible = true
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -63,25 +71,41 @@ fun ClinicDetailScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        WeekDaysRow()
+        //
+        WeekDaysRow(onDaySelected = { day ->
+            selectedDate.value = day
+        })
+        //
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Số lượng bác sĩ: ${doctors.size}")
         LazyColumn {
             items(doctors) { doctor ->
-                DoctorCard(doctor = doctor)
+
+                DoctorCard(
+                    doctor = doctor,
+                    onClicked = {
+                        appointmentViewModel.selectedDate.value = selectedDate.value
+                        appointmentViewModel.selectedDoctor.value = doctor
+                        navController.navigate("Appointment")
+                    }
+                )
             }
+
+
         }
+
 
 
     }
 }
 
 @Composable
-fun DoctorCard(doctor: Doctor){
+fun DoctorCard(doctor: Doctor, onClicked: () -> Unit = {}){
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onClicked()},
         elevation = 4.dp
     ) {
         Row(
@@ -124,7 +148,7 @@ fun DoctorCard(doctor: Doctor){
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Giá khám: ${doctor.giakham} VND",
+                        text = "Giá khám: ${formatNumber(doctor.giakham)} VND",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = colorResource(id = R.color.darkblue)
