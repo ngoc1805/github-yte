@@ -78,13 +78,21 @@ class MainActivity : ComponentActivity() {
 }
 val ipCuaNgoc = "192.168.0.101"
 val address = "http://$ipCuaNgoc:8080/"
-// "172.20.10.7"
 //"192.168.0.101"
 val loaitaikhoa = "benhnhan"
 var isLogin by mutableStateOf(false)
+
+var IdNguoiDung  by mutableStateOf(0)
 var hoTen  by mutableStateOf("")
+var Sđt  by mutableStateOf("")
+var ngaySinh by mutableStateOf("")
+var CCCD  by mutableStateOf("")
+var queQuan  by mutableStateOf("")
+var gioiTinh  by mutableStateOf("")
+var soDu  by mutableStateOf(0)
 var IdTaiKhoan  by mutableStateOf(0)
-var soSu  by mutableStateOf(0)
+
+
 @Composable
 fun AppnavHost(
     navController: NavHostController,

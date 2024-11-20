@@ -55,17 +55,17 @@ fun DisplayNews(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 8.dp, vertical = 2.dp)
             .clickable {
 
                 onClicked()
             },
-        elevation = 4.dp,
+        elevation = 2.dp,
 
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -79,7 +79,7 @@ fun DisplayNews(
             Image(
                 painter = rememberAsyncImagePainter(model = newsClass.linkAnh) ,
                 contentDescription = null,
-                modifier = Modifier.size(height = 75.dp, width = 75.dp)
+                modifier = Modifier.size(100.dp)
 
             )
 

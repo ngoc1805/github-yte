@@ -26,6 +26,9 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,10 +42,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.yte.CCCD
+import com.example.yte.IdNguoiDung
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
+import com.example.yte.Sđt
+import com.example.yte.gioiTinh
 import com.example.yte.hoTen
 import com.example.yte.isLogin
+import com.example.yte.ngaySinh
+import com.example.yte.queQuan
+import com.example.yte.soDu
 
 @Composable
 fun PersonalScreen(navController: NavController){
@@ -61,13 +71,21 @@ fun PersonalScreen(navController: NavController){
     Spacer(modifier = Modifier.height(2.dp))
     setCard(
         imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout_24),
-        text = "Đăng xuất",
-        onClick = {
-            IdTaiKhoan = 0
-            isLogin = false
-            navController.navigate("LoginSignUpScreen")
-        }
-    )
+        text = "Đăng xuất"
+    ) {
+        IdTaiKhoan = 0
+        isLogin = false
+        IdNguoiDung = 0
+        hoTen = ""
+        Sđt = ""
+        ngaySinh =""
+        CCCD =""
+        queQuan =""
+        gioiTinh=""
+        soDu =0
+
+        navController.navigate("LoginSignUpScreen")
+    }
 
 
 }

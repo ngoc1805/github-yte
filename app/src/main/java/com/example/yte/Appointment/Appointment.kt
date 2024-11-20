@@ -43,6 +43,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
+import com.example.yte.IdNguoiDung
 import com.example.yte.R
 import com.example.yte.formatNumber
 import java.text.SimpleDateFormat
@@ -55,6 +56,7 @@ class AppointmentViewModel : ViewModel(){
     val selectedDate = mutableStateOf<Day?>(null)
     val selectedDoctor = mutableStateOf<Doctor?>(null)
     val isTimeSelected = mutableStateOf(false)
+    val isTime = mutableStateOf("")
 
 }
 @Composable
@@ -62,6 +64,12 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
     val selectedDoctor = appointmentViewModel.selectedDoctor.value
     val selectedDate = appointmentViewModel.selectedDate.value
     val isTimeSelected = appointmentViewModel.isTimeSelected.value
+
+    var bacSiId by remember{ mutableStateOf(0) }
+    var ngayKham by remember{ mutableStateOf("") }
+    var gioKham = appointmentViewModel.isTime.value
+    var trangThai by remember{ mutableStateOf("Đã lên lịch") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         AppBarView(
             title = "Lịch hẹn" ,
@@ -94,8 +102,10 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
                     ) {
                         Column( horizontalAlignment = Alignment.End) {
                             selectedDoctor?.let { doctor ->
+
+                                bacSiId = doctor.bacSiId
                                 Text(
-                                    text = "Bác sĩ: ${doctor.hoten}",
+                                    text = "Bác sĩ: ${doctor.bacSiId} + ${doctor.hoten}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -157,6 +167,7 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
         }
         Spacer(modifier = Modifier.height(24.dp))
         selectedDate?.let {
+            ngayKham = it.fullDate
             Text(
                 text = "Ngày hẹn: ${it.fullDate}",
                 fontWeight = FontWeight.Bold,
@@ -186,6 +197,7 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
             ) {
             Text(text = "Xác nhận")
         }
+        Text(text = "$IdNguoiDung+ $bacSiId + $ngayKham +$gioKham+ $trangThai")
 
 
 
@@ -265,6 +277,7 @@ fun AppointmentTimesCard(selectedDate: Day?, appointmentViewModel: AppointmentVi
                             )
                             .clickable(enabled = !isPast) {
                                 selectedTime = time
+                                appointmentViewModel.isTime.value = time
 
 
                             }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -37,8 +38,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yte.Api.CreateOrder
 import com.example.yte.AppBarView
+import com.example.yte.IdNguoiDung
+import com.example.yte.IdTaiKhoan
+import com.example.yte.Login_SignUp.NguoiDungViewModel
 import com.example.yte.R
 import com.example.yte.formatNumber
+import com.example.yte.soDu
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPayError
 import vn.zalopay.sdk.ZaloPaySDK
@@ -120,7 +125,7 @@ class OrderPayment : ComponentActivity() {
 }
 
 class PaymentViewModel : ViewModel() {
-    var balance = mutableStateOf(0)
+    var balance = mutableStateOf(soDu)
         private set
 
     var money = mutableStateOf("")
@@ -142,13 +147,16 @@ class PaymentViewModel : ViewModel() {
     fun updateBalance(amount: Int) {
         balance.value += amount
     }
+
+
 }
 
 
 @Composable
 fun Payment(
     navController: NavController,
-    viewModel: PaymentViewModel = viewModel()
+    viewModel: PaymentViewModel = viewModel(),
+    nguoiDungViewModel: NguoiDungViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val balance by viewModel.balance
@@ -168,11 +176,19 @@ fun Payment(
             if (paymentResult == "success") {
                 viewModel.updateBalance(paymentAmount)
                 Toast.makeText(context, "Thanh toán thành công", Toast.LENGTH_SHORT).show()
+                nguoiDungViewModel.UpdatSoDu(IdNguoiDung,balance)
+                nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
+                soDu =  nguoiDungViewModel.nguoiDung?.sodu ?: 0
+
             }
         } else {
             Toast.makeText(context, "Thanh toán không thành công", Toast.LENGTH_SHORT).show()
         }
     }
+    LaunchedEffect(IdTaiKhoan) {
+        nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
+    }
+    soDu = nguoiDungViewModel.nguoiDung?.sodu ?: 0
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -214,7 +230,7 @@ fun Payment(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${formatNumber(balance)} vnđ",
+                    text = "${formatNumber(soDu)} vnđ",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.cam)
@@ -262,6 +278,8 @@ fun Payment(
                 val intent = Intent(context, OrderPayment::class.java)
                 intent.putExtra("moneyAmount", money)
                 launcher.launch(intent)
+
+
             },
             modifier = Modifier
                 .padding(start = 80.dp)

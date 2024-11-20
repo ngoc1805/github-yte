@@ -90,12 +90,7 @@ fun ClinicDetailScreen(
                     }
                 )
             }
-
-
         }
-
-
-
     }
 }
 
@@ -155,9 +150,7 @@ fun DoctorCard(doctor: Doctor, onClicked: () -> Unit = {}){
                     )
                 }
             }
-            
         }
-
     }
 }
 @Composable
@@ -177,8 +170,9 @@ fun test(doctors: List<Doctor>){
 @Composable
 fun DoctorCardPR(){
     val sampleDoctor = Doctor(
-        bac_si_id = 1,
+        bacSiId = 1,
         hoten = "Bác sĩ Nguyễn Văn A",
+        idTaiKhoan = 0,
         khoa = "Khoa nội",
         giakham = 200000
     )

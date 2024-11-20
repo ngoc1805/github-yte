@@ -50,6 +50,11 @@ data class NguoiDung(
 
 ): Parcelable
 
+data class updateSoDu(
+    val idnguoidung: Int,
+    val sodu : Int
+)
+
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
     .addConverterFactory(GsonConverterFactory.create())
@@ -63,6 +68,10 @@ interface APINguoiDung{
     )
     @GET("/get/nguoidung")
     suspend fun getNguoiDungByIdTk(@Query("idtaikhoan") idtaikhoan: Int): NguoiDung
+    @POST("/post/update/sodu")
+    suspend fun UpdateSodu(
+        @Body updateSoDu: updateSoDu
+    )
 }
 
 class NguoiDungViewModel : ViewModel(){
@@ -135,6 +144,13 @@ class NguoiDungViewModel : ViewModel(){
                 Log.e("API_ERROR", "Unknown Error: ${e.message}")
             }
         }
+    }
+    fun UpdatSoDu(idnguoidung: Int, sodu: Int){
+        viewModelScope.launch {
+            val updatesodu = updateSoDu(idnguoidung,sodu)
+            recipeServiceNguoiDung.UpdateSodu(updatesodu)
+        }
+
     }
 
 }

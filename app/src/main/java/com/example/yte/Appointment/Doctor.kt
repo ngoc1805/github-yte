@@ -6,8 +6,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Doctor(
-    val bac_si_id : Int,
+    val bacSiId : Int,
     val hoten : String,
+    val idTaiKhoan: Int,
     val khoa : String,
     val giakham : Int
 ):Parcelable

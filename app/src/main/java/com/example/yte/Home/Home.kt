@@ -44,6 +44,13 @@ import com.example.yte.R
 import com.example.yte.hoTen
 import com.example.yte.isLogin
 import androidx.compose.material3.CircularProgressIndicator
+import com.example.yte.CCCD
+import com.example.yte.IdNguoiDung
+import com.example.yte.Sđt
+import com.example.yte.gioiTinh
+import com.example.yte.ngaySinh
+import com.example.yte.queQuan
+import com.example.yte.soDu
 
 
 @Composable
@@ -66,7 +73,15 @@ fun Home(
 
         isLoading = false
     }
+    IdNguoiDung = nguoiDungViewModel.nguoiDung?.nguoiDungId ?: 0
     hoTen = nguoiDungViewModel.nguoiDung?.hoten ?: ""
+    Sđt = nguoiDungViewModel.nguoiDung?.sdt ?: ""
+    ngaySinh = nguoiDungViewModel.nguoiDung?.ngaysinh ?: ""
+    CCCD = nguoiDungViewModel.nguoiDung?.cccd ?: ""
+    queQuan = nguoiDungViewModel.nguoiDung?.quequan ?: ""
+    gioiTinh = nguoiDungViewModel.nguoiDung?.gioitinh ?: ""
+    soDu = nguoiDungViewModel.nguoiDung?.sodu ?: 0
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         AppBarView(
@@ -87,13 +102,13 @@ fun Home(
         } else {
             if (selectedTab == 0) {
                 Card(modifier = Modifier.weight(1f)) {
-                    if (isLogin) {
+
                         HomeScreen(navController, detailViewModel = detailViewModel)
                         color = R.color.black
                         appbarBackgroundColor = R.color.white
                         titles = "Xin chào $hoTen"
                         alignment = Alignment.BottomStart
-                    }
+
 
                 }
             } else {
@@ -323,7 +338,7 @@ fun Home(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Thông báo",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         color = if(selectedTab == 2) Color.White else Color.Gray
                     )
                 }

@@ -85,6 +85,7 @@ dependencies {
         "include" to listOf("*.aar", "*.jar"),
         "exclude" to listOf("")
     )))
+    implementation(libs.play.services.maps)
 
 
     val nav_version = "2.7.5"
