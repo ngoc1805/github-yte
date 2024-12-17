@@ -3,12 +3,9 @@ package com.example.yte.Home
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 
@@ -31,20 +28,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yte.Api.CreateOrder
 import com.example.yte.AppBarView
-import com.example.yte.IdNguoiDung
 import com.example.yte.IdTaiKhoan
-import com.example.yte.Login_SignUp.NguoiDungViewModel
+import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.R
 import com.example.yte.formatNumber
+import com.example.yte.idBenhNhan
 import com.example.yte.soDu
-import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPayError
 import vn.zalopay.sdk.ZaloPaySDK
 import vn.zalopay.sdk.listeners.PayOrderListener
@@ -176,7 +171,7 @@ fun Payment(
             if (paymentResult == "success") {
                 viewModel.updateBalance(paymentAmount)
                 Toast.makeText(context, "Thanh toán thành công", Toast.LENGTH_SHORT).show()
-                nguoiDungViewModel.UpdatSoDu(IdNguoiDung,balance)
+                nguoiDungViewModel.UpdatSoDu(idBenhNhan,balance)
                 nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
                 soDu =  nguoiDungViewModel.nguoiDung?.sodu ?: 0
 
@@ -247,12 +242,6 @@ fun Payment(
             color = colorResource(id = R.color.darkblue),
             modifier = Modifier.padding(start = 8.dp)
         )
-
-//        Text(
-//            text = "Ví dụ: nhập 300 để nạp 300.000 vnđ",
-//            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-//            modifier = Modifier.padding(start = 8.dp)
-//        )
 
         Spacer(modifier = Modifier.height(32.dp))
 

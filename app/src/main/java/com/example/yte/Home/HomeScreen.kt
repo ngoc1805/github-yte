@@ -1,6 +1,4 @@
 package com.example.yte.Home
-import android.util.Log
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -15,17 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,25 +29,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import com.example.yte.Appointment.DoctorCard
-import com.example.yte.Appointment.DoctorViewModel
-import com.example.yte.News.DisplayNews
+import com.example.yte.Appointment.AppointmentViewModel
 import com.example.yte.News.DisplayNewsLazy
 
 import com.example.yte.News.detailViewModel
 import com.example.yte.News.newsViewModel
 import com.example.yte.R
+import com.example.yte.isLogin
 import kotlinx.coroutines.delay
 
 
@@ -64,7 +50,8 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     navController: NavController,
     newsViewModel: newsViewModel = viewModel(),
-    detailViewModel: detailViewModel = viewModel()
+    detailViewModel: detailViewModel = viewModel(),
+    appointmentViewModel: AppointmentViewModel = viewModel()
 
 ){
     val newslist = newsViewModel.newsList
@@ -73,7 +60,7 @@ fun HomeScreen(
         ImageSlider()
         Spacer(modifier = Modifier.height(16.dp))
         Spacer(modifier = Modifier.height(32.dp))
-        ButtonGrid(navController)
+        ButtonGrid(navController, appointmentViewModel=appointmentViewModel)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "     Tin tức", fontWeight = FontWeight.Bold, fontSize = 14.sp)
         Spacer(modifier = Modifier.height(4.dp))
@@ -169,7 +156,7 @@ fun CustomButtons(
 }
 
 @Composable
-fun ButtonGrid(navController: NavController){
+fun ButtonGrid(navController: NavController, appointmentViewModel: AppointmentViewModel = viewModel()){
     Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -181,13 +168,13 @@ fun ButtonGrid(navController: NavController){
                 text = "Đặt lịch khám",
                 isSelected = true,
                 modifier = Modifier.weight(1f),
-                onDeleteNavClicked = { navController.navigate("Booking")}
+                onDeleteNavClicked = { if(isLogin)navController.navigate("Booking") else navController.navigate("LoginSignUpScreen")}
             )
         CustomButtons(
                 icon = painterResource(id = R.drawable.hososuckhoe),
                 text = "Hồ sơ sức khỏe",
                 modifier = Modifier.weight(1f),
-                onDeleteNavClicked = { navController.navigate("HealthRecords")}
+                onDeleteNavClicked = { if(isLogin) navController.navigate("HealthRecords") else navController.navigate("LoginSignUpScreen")}
             )
         }
     Spacer(modifier = Modifier.height(12.dp))
@@ -203,11 +190,14 @@ fun ButtonGrid(navController: NavController){
                 modifier = Modifier.weight(1f),
 
         )
-//            CustomButtons(
-//                icon = ImageVector.vectorResource(id = R.drawable.ic_visibility),
-//                text = "Bản đồ bệnh viện ",
-//                modifier = Modifier.weight(1f),)
-        Spacer(modifier = Modifier.weight(1f))
+            CustomButtons(
+                icon = painterResource(id = R.drawable.bot),
+                text = "Trò chuyện cùng AI",
+                modifier = Modifier.weight(1f),
+                onDeleteNavClicked = {navController.navigate("ChatPage")}
+                )
+
+//        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

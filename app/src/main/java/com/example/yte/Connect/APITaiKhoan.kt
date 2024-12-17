@@ -1,4 +1,4 @@
-package com.example.yte.Login_SignUp
+package com.example.yte.Connect
 
 import android.os.Parcelable
 import androidx.compose.runtime.getValue
@@ -17,7 +17,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import com.example.yte.address
-import com.google.android.datatransport.cct.StringMerger
 
 
 @Parcelize
@@ -25,7 +24,7 @@ data class TaiKhoan(
     val tenTk: String,
     val matKhau: String,
     val loaiTk: String,
-    val id_TaiKhoan: Int
+    val idTaiKhoan: Int
 ): Parcelable
 data class ApiResponse(
     val exists: Boolean,
@@ -33,7 +32,6 @@ data class ApiResponse(
 )
 data class ApiResponse1(
     val exists: Boolean
-
 )
 
 data class IdResponse(
@@ -62,7 +60,7 @@ val recipeServiceTaiKhoan = retrofit.create(APITaiKhoan::class.java)
 
 interface APITaiKhoan{
     @GET("check/taikhoan")
-    suspend fun checkTk(@Query("tenTK") tenTk:String):ApiResponse
+    suspend fun checkTk(@Query("tenTK") tenTk:String): ApiResponse
 
     @POST("post/add/taikhoan")
     suspend fun addTaiKhoan(
@@ -72,7 +70,7 @@ interface APITaiKhoan{
    @POST("/post/id/bytentk")
    suspend fun getId(
        @Body tenTkResponse: tenTkResponse
-   ):IdResponse
+   ): IdResponse
 
     @POST("post/delete_account")
     suspend fun deleteTaiKhoa(
@@ -86,7 +84,7 @@ interface APITaiKhoan{
 
 class TaiKhoanViewModel : ViewModel(){
 
-    var id_taikhoan by mutableStateOf<Int?>(null)
+    var id_taikhoan by mutableStateOf<IdResponse?>(null)
         private set
 
     private val _checkResult = MutableStateFlow<ApiResponse?>(null)
@@ -161,6 +159,8 @@ class TaiKhoanViewModel : ViewModel(){
         viewModelScope.launch {
             val tenTkResponse = tenTkResponse(tenTk)
             _id.value = recipeServiceTaiKhoan.getId(tenTkResponse)
+//            val id_taikhoan = recipeServiceTaiKhoan.getId(tenTkResponse)
+//            this@TaiKhoanViewModel.id_taikhoan = id_taikhoan
         }
     }
 }

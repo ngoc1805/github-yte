@@ -57,6 +57,11 @@ android {
 
 dependencies {
 
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
+
     implementation ("com.google.mlkit:barcode-scanning:17.0.3")
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
 

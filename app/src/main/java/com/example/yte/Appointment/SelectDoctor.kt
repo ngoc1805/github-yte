@@ -28,12 +28,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yte.Connect.Doctor
+import com.example.yte.Connect.DoctorViewModel
 import com.example.yte.R
 import com.example.yte.formatNumber
 
@@ -120,14 +121,14 @@ fun DoctorCard(doctor: Doctor, onClicked: () -> Unit = {}){
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = doctor.hoten,
+                    text = "${doctor.hoTen}",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Box {
                     Text(
-                        text = "Khoa: ${doctor.khoa}",
+                        text = "Khoa: ${doctor.khoa}" ?:"",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
@@ -143,7 +144,7 @@ fun DoctorCard(doctor: Doctor, onClicked: () -> Unit = {}){
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Giá khám: ${formatNumber(doctor.giakham)} VND",
+                        text = "Giá khám: ${formatNumber(doctor.giaKham)} VND" ?: "",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = colorResource(id = R.color.darkblue)
@@ -170,11 +171,11 @@ fun test(doctors: List<Doctor>){
 @Composable
 fun DoctorCardPR(){
     val sampleDoctor = Doctor(
-        bacSiId = 1,
-        hoten = "Bác sĩ Nguyễn Văn A",
+        idBacSi = "bs001",
+        hoTen = "Bác sĩ Nguyễn Văn A",
         idTaiKhoan = 0,
         khoa = "Khoa nội",
-        giakham = 200000
+        giaKham = 200000
     )
     DoctorCard(doctor = sampleDoctor)
 }

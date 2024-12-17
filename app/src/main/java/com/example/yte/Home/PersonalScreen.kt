@@ -43,12 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.yte.CCCD
-import com.example.yte.IdNguoiDung
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
 import com.example.yte.Sđt
 import com.example.yte.gioiTinh
 import com.example.yte.hoTen
+import com.example.yte.idBenhNhan
 import com.example.yte.isLogin
 import com.example.yte.ngaySinh
 import com.example.yte.queQuan
@@ -65,7 +65,8 @@ fun PersonalScreen(navController: NavController){
         onClick = {navController.navigate("Payment")}
         )
     Spacer(modifier = Modifier.height(24.dp))
-    setCard(imageVector = Icons.Default.Lock, text = "Đổi mật khẩu")
+    setCard(imageVector = Icons.Default.Lock, text = "Đổi mật khẩu",
+        onClick = {navController.navigate("createPin")})
     Spacer(modifier = Modifier.height(2.dp))
     setCard(imageVector = Icons.Default.Delete, text = "Xóa tài khoản")
     Spacer(modifier = Modifier.height(2.dp))
@@ -75,7 +76,7 @@ fun PersonalScreen(navController: NavController){
     ) {
         IdTaiKhoan = 0
         isLogin = false
-        IdNguoiDung = 0
+        idBenhNhan = ""
         hoTen = ""
         Sđt = ""
         ngaySinh =""
@@ -168,7 +169,9 @@ fun SecondCard(navController: NavController){
                     }
                 }
                 //button2
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(1f)
+                    .clickable { navController.navigate("History") },
+                    contentAlignment = Alignment.Center) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,

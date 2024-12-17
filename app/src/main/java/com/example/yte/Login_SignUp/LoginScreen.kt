@@ -18,14 +18,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.yte.Connect.NguoiDungViewModel
+import com.example.yte.Connect.TaiKhoanViewModel
 import com.example.yte.DismissKeyboard
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
-import com.example.yte.hoTen
 import com.example.yte.isLogin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +43,8 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) } // Quản lý trạng thái hiển thị/ẩn mật khẩu
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
-DismissKeyboard {
+
+    DismissKeyboard {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -138,38 +139,33 @@ DismissKeyboard {
                             viewModel.validateAndLogin()
                             if(viewModel.isLoginSuccessful){
                                 CoroutineScope(Dispatchers.IO).launch{
-                                   taiKhoanViewModel.loGin(viewModel.numberPhone, viewModel.passWord)
+                                    taiKhoanViewModel.loGin(viewModel.numberPhone, viewModel.passWord)
                                     taiKhoanViewModel.kq.collect {apiResponse1->
                                         if(apiResponse1?.exists == true){
+                                            isLogin = true
                                             CoroutineScope(Dispatchers.IO).launch{
                                                 taiKhoanViewModel.getIdbyTenTk(viewModel.numberPhone)
                                                 taiKhoanViewModel.id.collect{IdResponse->
-                                                    IdTaiKhoan = IdResponse?.rowsDeleted ?: 0
-
+                                                    IdTaiKhoan = IdResponse?.rowsDeleted ?:0
                                                     withContext(Dispatchers.Main) {
-                                                        dialogMessage = "Đăng nhập thành công $IdTaiKhoan "
-                                                        showDialog = true
-                                                        isLogin = true
+                                                        dialogMessage = "Đăng nhập thành công "
+                                                        navController.navigate("Home")
                                                     }
 
                                                 }
                                             }
-
-//                                            dialogMessage = "Đăng nhập thành công $IdTaiKhoan"
-//                                            showDialog = true
-                                        }else{
+                                        }else if(isLogin == false){
                                             withContext(Dispatchers.Main) {
                                                 dialogMessage = "Đăng nhập thất bại"
                                                 showDialog = true
                                             }
-//                                            dialogMessage = "Đăng nhập thất bại"
-//                                            showDialog = true
                                         }
                                     }
 
                                 }
                             }
-                                  },
+
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.darkblue))
                     ) {
@@ -187,25 +183,25 @@ DismissKeyboard {
                     )
                 }
             }
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(text = "Thông báo") },
-                text = { Text(text = dialogMessage) },
-                confirmButton = {
-                    TextButton(onClick = {
-                        navController.navigate("Home")
-                        showDialog = false
 
-                    }) {
-                        Text("OK")
+
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text(text = "Thông báo") },
+                    text = { Text(text = dialogMessage) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDialog = false
+
+                        }) {
+                            Text(text = "OK", color = colorResource(id = R.color.darkblue))
+                        }
                     }
-                }
-            )
+                )
+            }
         }
-
     }
-}
 }
 
 

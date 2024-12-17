@@ -1,26 +1,59 @@
 package com.example.yte.Home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
+import com.example.yte.Appointment.AppointmentViewModel
+import com.example.yte.Connect.KetQuaKham
+import com.example.yte.Connect.KetQuaKhamViewModel
 import com.example.yte.R
+import com.example.yte.chuyenDoiNgay
+import com.example.yte.idBenhNhan
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HealthRecords(navController: NavController){
-    Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
+fun HealthRecords(
+    navController: NavController,
+    ketQuaKhamViewModel: KetQuaKhamViewModel = viewModel(),
+    appointmentViewModel: AppointmentViewModel = viewModel()
+){
+    LaunchedEffect(idBenhNhan) {
+        ketQuaKhamViewModel.getKetQuaKhamByIdBenhNhan(idBenhNhan)
+    }
+val ketQuaKhams = ketQuaKhamViewModel.ketQuaKhamList
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.White)) {
         AppBarView(
             title = "Hồ sơ sức khỏe" ,
             color = R.color.white,
@@ -31,16 +64,67 @@ fun HealthRecords(navController: NavController){
             )
         Spacer(modifier = Modifier.height(16.dp))
         //
-        Box(
+        if(ketQuaKhams.size == 0){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(color = Color.White),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.noresult),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }else{
+            LazyColumn {
+                items(ketQuaKhams){ketQuaKham ->
+                    ketQuaKhamCard(
+                        ketQuaKham = ketQuaKham,
+                        onClicked = {
+                            appointmentViewModel.ketQuaKham.value = ketQuaKham
+                            navController.navigate("medicalExaminationResults")
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ketQuaKhamCard(ketQuaKham: KetQuaKham, onClicked: () -> Unit = {}){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onClicked() },
+        elevation = 4.dp
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .background(color = Color.White),
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Column {
+                Text(
+                    text = "Kết quả khám ngày ${chuyenDoiNgay(ketQuaKham.ngayTraKetQua)}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+
+            }
+            Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = R.drawable.noresult),
+                painter = painterResource(id = R.drawable.medicalexaminationresults),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(end = 0.dp),
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.darkblue))
             )
         }
     }

@@ -55,7 +55,7 @@ fun DisplayNews(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(vertical = 2.dp)
             .clickable {
 
                 onClicked()
@@ -65,8 +65,7 @@ fun DisplayNews(
     ) {
         Row(
             modifier = Modifier
-
-                .fillMaxWidth(),
+                .fillMaxWidth().padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -154,7 +153,7 @@ fun newsDetail(
                     text = newsClass.tieuDe,
                     fontSize = 20.sp, // Tăng font size cho tiêu đề
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp) // Khoảng cách dưới tiêu đề
+                    modifier = Modifier.padding(8.dp) // Khoảng cách dưới tiêu đề
                 )
 
                 // Hình ảnh
@@ -177,7 +176,7 @@ fun newsDetail(
                     textAlign = TextAlign.Justify,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(bottom = 16.dp) // Khoảng cách dưới nội dung
+                        .padding(8.dp) // Khoảng cách dưới nội dung
                 )
             }
         }

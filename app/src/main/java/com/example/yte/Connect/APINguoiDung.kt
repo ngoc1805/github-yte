@@ -1,4 +1,4 @@
-package com.example.yte.Login_SignUp
+package com.example.yte.Connect
 
 import android.os.Parcelable
 import android.util.Log
@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.yte.Appointment.Doctor
 import com.example.yte.address
-import com.example.yte.ipCuaNgoc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +36,7 @@ data class NguoiDungRequest(
 
 @Parcelize
 data class NguoiDung(
-    val nguoiDungId: Int,
+    val idBenhNhan: String,
     val hoten: String,
     val sdt: String,
     val ngaysinh: String,
@@ -46,12 +44,12 @@ data class NguoiDung(
     val quequan:String,
     val gioitinh:String,
     val sodu: Int,
-    val idtaikhoan: Int
+    val idTaiKhoan: Int
 
 ): Parcelable
 
 data class updateSoDu(
-    val idnguoidung: Int,
+    val idbenhnhan: String,
     val sodu : Int
 )
 
@@ -67,7 +65,7 @@ interface APINguoiDung{
         @Body nguoiDungRequest: NguoiDungRequest
     )
     @GET("/get/nguoidung")
-    suspend fun getNguoiDungByIdTk(@Query("idtaikhoan") idtaikhoan: Int): NguoiDung
+    suspend fun getNguoiDungByIdTk(@Query("idTaiKhoan") idtaikhoan: Int): NguoiDung
     @POST("/post/update/sodu")
     suspend fun UpdateSodu(
         @Body updateSoDu: updateSoDu
@@ -145,9 +143,9 @@ class NguoiDungViewModel : ViewModel(){
             }
         }
     }
-    fun UpdatSoDu(idnguoidung: Int, sodu: Int){
+    fun UpdatSoDu(idbenhnhan: String, sodu: Int){
         viewModelScope.launch {
-            val updatesodu = updateSoDu(idnguoidung,sodu)
+            val updatesodu = updateSoDu(idbenhnhan,sodu)
             recipeServiceNguoiDung.UpdateSodu(updatesodu)
         }
 

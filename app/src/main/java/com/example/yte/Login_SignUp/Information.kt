@@ -19,7 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +38,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yte.AppBarView
+import com.example.yte.Connect.DangKyViewModel
+import com.example.yte.Connect.NguoiDungViewModel
+import com.example.yte.Connect.TaiKhoanViewModel
 import com.example.yte.R
 import com.example.yte.loaitaikhoa
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -56,7 +58,8 @@ fun Information(
     inforViewModel: InforViewModel = viewModel(),
     signUpViewModel: SignUpViewModel = viewModel(),
     taiKhoanViewModel: TaiKhoanViewModel = viewModel(),
-    nguoiDungViewModel: NguoiDungViewModel = viewModel()
+    nguoiDungViewModel: NguoiDungViewModel = viewModel(),
+    dangKyViewModel: DangKyViewModel = viewModel()
 
 ){
     val tenSĐT = signUpViewModel.phoneNumber
@@ -305,16 +308,13 @@ fun Information(
         Button(
             onClick = {
                 try {
-
                     // Gọi tuần tự
-                    taiKhoanViewModel.addTaiKhoan(tenSĐT, matKhau, loaiTk)
+//                    taiKhoanViewModel.addTaiKhoan(tenSĐT, matKhau, loaiTk)
 //
 //                    // Sau khi thêm tài khoản thành công, gọi API để lấy id_taikhoan theo tenSĐT
 //                    taiKhoanViewModel.fetchIdByTenTK(tenSĐT)
 //
 //                    // Bạn có thể theo dõi idTaiKhoan trong UI
-
-
 
                     showDialog = true
                 } catch (e: Exception) {
@@ -348,16 +348,37 @@ fun Information(
                 confirmButton = {
                     Button(onClick = {
                         CoroutineScope(Dispatchers.IO).launch{
-                            nguoiDungViewModel.addNguoiDung(
-                                tenSĐT,
-                                inforViewModel.name,
-                                tenSĐT,
-                                inforViewModel.birthday,
-                                inforViewModel.CCCD,
-                                inforViewModel.quequan,
-                                inforViewModel.gender,
-                                0
-
+//                            nguoiDungViewModel.addNguoiDung(
+//                                tenSĐT,
+//                                inforViewModel.name,
+//                                tenSĐT,
+//                                inforViewModel.birthday,
+//                                inforViewModel.CCCD,
+//                                inforViewModel.quequan,
+//                                inforViewModel.gender,
+//                                0
+//                            )
+                            dangKyViewModel.dangKy(
+                                tentk = tenSĐT,
+                                matkhau = matKhau,
+                                loaitk = loaiTk,
+                                hoten = inforViewModel.name,
+                                sdt = tenSĐT,
+                                ngaysinh = inforViewModel.birthday,
+                                cccd = inforViewModel.CCCD,
+                                quequan = inforViewModel.quequan,
+                                gioitinh = inforViewModel.gender,
+                                onSuccess = { message ->
+                                    // Xử lý khi thành công
+                                    Log.d("API", message)
+                                    showDialog = false
+                                    navController.navigate("LoginSignUpScreen") // Điều hướng về màn hình đăng nhập
+                                },
+                                onError = { error ->
+                                    // Xử lý khi có lỗi
+                                    Log.e("API", error)
+                                    showDialog = false
+                                }
                             )
                         }
 

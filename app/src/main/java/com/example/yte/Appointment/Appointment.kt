@@ -25,6 +25,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,32 +44,53 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.yte.AppBarView
-import com.example.yte.IdNguoiDung
+import com.example.yte.Connect.Doctor
+import com.example.yte.Connect.KetQuaKham
+import com.example.yte.Connect.LichKham
+import com.example.yte.Connect.LichKhamViewModel
+import com.example.yte.Connect.recipeServiceLichKham
+
 import com.example.yte.R
 import com.example.yte.formatNumber
+import com.example.yte.idBenhNhan
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-import java.util.*
 
 class AppointmentViewModel : ViewModel(){
     val selectedDate = mutableStateOf<Day?>(null)
     val selectedDoctor = mutableStateOf<Doctor?>(null)
     val isTimeSelected = mutableStateOf(false)
     val isTime = mutableStateOf("")
+    val idLichKham = mutableStateOf(0)
+    val selectedLichKham = mutableStateOf<LichKham?>(null)
+    val ketQuaKham = mutableStateOf<KetQuaKham?>(null)
+    val maPin = mutableStateOf("")
+
 
 }
 @Composable
-fun Appointment(navController: NavController, appointmentViewModel: AppointmentViewModel = viewModel()){
+fun Appointment(
+    navController: NavController,
+    appointmentViewModel: AppointmentViewModel = viewModel(),
+    lichKhamViewModel: LichKhamViewModel = viewModel(),
+    thanhToanViewModel: ThanhToanViewModel = viewModel()
+){
+
+    LaunchedEffect(Unit) {
+        appointmentViewModel.isTimeSelected.value = false
+        appointmentViewModel.isTime.value = ""
+    }
+
     val selectedDoctor = appointmentViewModel.selectedDoctor.value
     val selectedDate = appointmentViewModel.selectedDate.value
     val isTimeSelected = appointmentViewModel.isTimeSelected.value
 
-    var bacSiId by remember{ mutableStateOf(0) }
+    var bacSiId by remember{ mutableStateOf("") }
     var ngayKham by remember{ mutableStateOf("") }
     var gioKham = appointmentViewModel.isTime.value
     var trangThai by remember{ mutableStateOf("Đã lên lịch") }
+    val tienCoc = 100000
 
     Column(modifier = Modifier.fillMaxSize()) {
         AppBarView(
@@ -103,9 +125,10 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
                         Column( horizontalAlignment = Alignment.End) {
                             selectedDoctor?.let { doctor ->
 
-                                bacSiId = doctor.bacSiId
+                                bacSiId = doctor.idBacSi
+
                                 Text(
-                                    text = "Bác sĩ: ${doctor.bacSiId} + ${doctor.hoten}",
+                                    text = "Bác sĩ: ${doctor.idBacSi} + ${doctor.hoTen}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -150,13 +173,13 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
                 selectedDoctor?.let { doctor ->
 
                      Text(
-                         text = "Giá khám: ${formatNumber(doctor.giakham)} VNĐ",
+                         text = "Giá khám: ${formatNumber(doctor.giaKham)} VNĐ",
                          color = Color(0xFF1565C0),
                          fontWeight = FontWeight.Bold,
                          fontSize = 16.sp
                          )
                     Text(
-                        text = "Đóng trước: 100.000 VNĐ",
+                        text = "Đóng trước: ${formatNumber(tienCoc  )} VNĐ",
                         color = Color(0xFF1565C0),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
@@ -183,7 +206,15 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                      /*TODO*/
+                thanhToanViewModel.bacSiId.value = bacSiId
+                thanhToanViewModel.ngayKham.value = ngayKham
+                thanhToanViewModel.gioKham.value = gioKham
+
+                navController.navigate("thanhtoan")
+
+                      },
             modifier = Modifier
                 .width(200.dp)
                 .align(Alignment.CenterHorizontally),
@@ -197,7 +228,7 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
             ) {
             Text(text = "Xác nhận")
         }
-        Text(text = "$IdNguoiDung+ $bacSiId + $ngayKham +$gioKham+ $trangThai")
+        Text(text = "$idBenhNhan+ $bacSiId + $ngayKham +$gioKham+ $trangThai")
 
 
 
@@ -205,22 +236,42 @@ fun Appointment(navController: NavController, appointmentViewModel: AppointmentV
 }
 
 @Composable
-fun AppointmentTimesCard(selectedDate: Day?, appointmentViewModel: AppointmentViewModel = viewModel()) {
+fun AppointmentTimesCard(
+    selectedDate: Day?,
+    appointmentViewModel: AppointmentViewModel = viewModel(),
+    lichKhamViewModel: LichKhamViewModel = viewModel()
+) {
     val times = listOf(
         "7:00", "7:15", "7:30", "7:45", "8:00", "8:15",
-        "8:30", "8:45", "9:00","22:00"
+        "8:30", "8:45", "9:00", "22:00"
     )
     var selectedTime by remember { mutableStateOf<String?>(null) }
     val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-
-
-
-
-
-    // Lấy ngày hiện tại để so sánh
     val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
     val isToday = selectedDate?.fullDate == currentDate
 
+    // Trạng thái khả dụng của từng khung giờ
+    val timeAvailability = remember { mutableStateOf<Map<String, Boolean>>(emptyMap()) }
+
+    // Gọi API kiểm tra giờ khả dụng
+    LaunchedEffect(selectedDate) {
+        if (selectedDate != null) {
+            val availability = mutableMapOf<String, Boolean>()
+            times.forEach { time ->
+                try {
+                    val result = recipeServiceLichKham.kiemTraLichKham(
+                        idBacSi = appointmentViewModel.selectedDoctor.value?.idBacSi ?: "",
+                        ngayKham = selectedDate.fullDate,
+                        gioKham = time
+                    )
+                    availability[time] = result["available"] ?: false
+                } catch (e: Exception) {
+                    availability[time] = false // Nếu lỗi, mặc định không khả dụng
+                }
+            }
+            timeAvailability.value = availability
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -248,18 +299,15 @@ fun AppointmentTimesCard(selectedDate: Day?, appointmentViewModel: AppointmentVi
             ) {
                 items(times.size) { index ->
                     val time = times[index]
-                    // Kiểm tra nếu là hôm nay, thì đánh giá `isPast` dựa trên thời gian hiện tại
                     val isPast = if (isToday) {
                         val timeAsDate = SimpleDateFormat("H:mm", Locale.getDefault()).parse(time)
                         timeAsDate?.before(SimpleDateFormat("H:mm", Locale.getDefault()).parse(currentTime)) ?: true
                     } else {
-                        false // Nếu là ngày khác, không có khung giờ nào bị coi là quá khứ
+                        false
                     }
-                    if(selectedTime != null){
-                        appointmentViewModel.isTimeSelected.value = true
-                    }else{
-                        appointmentViewModel.isTimeSelected.value = false
-                    }
+                    val isUnavailable = timeAvailability.value[time] == false // Không khả dụng
+                    val isDisabled = isPast || isUnavailable
+
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
@@ -267,24 +315,20 @@ fun AppointmentTimesCard(selectedDate: Day?, appointmentViewModel: AppointmentVi
                             .clip(RoundedCornerShape(8.dp))
                             .background(
                                 color = when {
-                                    isPast -> Color.Gray
-                                    selectedTime == time -> {
-                                        colorResource(id = R.color.teal_700)
-                                    }
-
+                                    isDisabled -> Color.Gray
+                                    selectedTime == time -> colorResource(id = R.color.teal_700)
                                     else -> Color.LightGray
-                                },
+                                }
                             )
-                            .clickable(enabled = !isPast) {
+                            .clickable(enabled = !isDisabled) {
                                 selectedTime = time
                                 appointmentViewModel.isTime.value = time
-
-
+                                appointmentViewModel.isTimeSelected.value = true // Cập nhật trạng thái
                             }
                     ) {
                         Text(
                             text = time,
-                            color = if (isPast) Color.White else Color.Black,
+                            color = if (isDisabled) Color.White else Color.Black,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -292,9 +336,9 @@ fun AppointmentTimesCard(selectedDate: Day?, appointmentViewModel: AppointmentVi
                 }
             }
         }
-
     }
 }
+
 
 
 //@Preview(showBackground = true)

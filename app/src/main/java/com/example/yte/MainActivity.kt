@@ -1,11 +1,13 @@
 package com.example.yte
 
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,11 +28,19 @@ import com.example.yte.Appointment.AppointmentViewModel
 import com.example.yte.Appointment.ClinicDetailScreen
 import com.example.yte.HealthIndex.HealthIndex
 import com.example.yte.Appointment.Booking
+import com.example.yte.Appointment.ThanhToanViewModel
+import com.example.yte.Appointment.thanhtoan
+import com.example.yte.ChatBot.ChatPage
 
 import com.example.yte.Home.HealthRecords
+import com.example.yte.Home.History
 import com.example.yte.Home.Home
+import com.example.yte.Home.MedicalExamination
 import com.example.yte.Home.Payment
 import com.example.yte.Home.PersonalScreen
+import com.example.yte.Home.createPin
+import com.example.yte.Home.medicalExaminationResults
+import com.example.yte.Home.reEnterPin
 import com.example.yte.Login_SignUp.Information
 
 import com.example.yte.Login_SignUp.LoginSignUpScreen
@@ -44,6 +54,7 @@ import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
@@ -61,12 +72,13 @@ class MainActivity : ComponentActivity() {
                        val appointmentViewModel: AppointmentViewModel = viewModel()
                        val detailViewModel: detailViewModel = viewModel()
                        val signUpViewModel: SignUpViewModel = viewModel()
+                       val thanhToanViewModel: ThanhToanViewModel = viewModel()
                        AppnavHost(
                            navController = navController,
                            appointmentViewModel = appointmentViewModel,
                            detailViewModel = detailViewModel,
-                           signUpViewModel = signUpViewModel
-
+                           signUpViewModel = signUpViewModel,
+                           thanhToanViewModel = thanhToanViewModel
                        )
                    }
 
@@ -76,13 +88,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-val ipCuaNgoc = "192.168.0.101"
+val ipCuaNgoc = "192.168.0.102"
 val address = "http://$ipCuaNgoc:8080/"
 //"192.168.0.101"
 val loaitaikhoa = "benhnhan"
 var isLogin by mutableStateOf(false)
 
-var IdNguoiDung  by mutableStateOf(0)
+var idBenhNhan  by mutableStateOf("")
 var hoTen  by mutableStateOf("")
 var Sđt  by mutableStateOf("")
 var ngaySinh by mutableStateOf("")
@@ -93,12 +105,14 @@ var soDu  by mutableStateOf(0)
 var IdTaiKhoan  by mutableStateOf(0)
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppnavHost(
     navController: NavHostController,
     appointmentViewModel: AppointmentViewModel,
     detailViewModel: detailViewModel,
     signUpViewModel: SignUpViewModel,
+    thanhToanViewModel: ThanhToanViewModel
 
     ){
     NavHost(
@@ -106,25 +120,47 @@ fun AppnavHost(
         startDestination = "LoginSignUpScreen"
     ) {
         composable("LoginSignUpScreen") { LoginSignUpScreen(navController,signUpViewModel=signUpViewModel)}
-        composable("Home") { Home(
+        composable("Home/{initialTab}") {backStackEntry ->
+            val initialTab = backStackEntry.arguments?.getString("initialTab")?.toIntOrNull() ?: 0
+            Home(
             navController,
+                appointmentViewModel = appointmentViewModel,
             detailViewModel=detailViewModel,
-            signUpViewModel=signUpViewModel
+            signUpViewModel=signUpViewModel,
+            initialTab = initialTab
         )}
+        composable("Home") {
+            Home(
+                navController,
+                appointmentViewModel = appointmentViewModel,
+                detailViewModel = detailViewModel,
+                signUpViewModel = signUpViewModel,
+                initialTab = 0 // Mặc định là tab đầu tiên
+            )
+        }
         composable("Information") { Information(navController,signUpViewModel = signUpViewModel)}
         composable("HealthIndex") { HealthIndex(navController)}
         composable("PersonalScreen"){ PersonalScreen(navController)}
-        composable("HealthRecords"){ HealthRecords(navController)}
+        composable("HealthRecords"){ HealthRecords(navController, appointmentViewModel=appointmentViewModel)}
         composable("Payment"){ Payment(navController)}
         composable("Booking"){ Booking(navController) }
         composable("clinicDetail/{clinicName}") { backStackEntry ->
             val clinicName = backStackEntry.arguments?.getString("clinicName") ?: ""
             ClinicDetailScreen(clinicName,navController,appointmentViewModel = appointmentViewModel)
         }
-        composable("Appointment"){ Appointment(navController,appointmentViewModel = appointmentViewModel)}
+        composable("Appointment"){ Appointment(
+            navController,
+            appointmentViewModel = appointmentViewModel,
+            thanhToanViewModel = thanhToanViewModel
+        )}
         composable("newsDetail"){ newsDetail(navController, detailViewModel = detailViewModel)}
-
-
+        composable("thanhtoan"){ thanhtoan(navController, thanhToanViewModel = thanhToanViewModel)}
+        composable("History"){ History(navController = navController)}
+        composable("MedicalExamination"){ MedicalExamination(navController=navController, appointmentViewModel = appointmentViewModel)}
+        composable("medicalExaminationResults"){ medicalExaminationResults(navController=navController, appointmentViewModel = appointmentViewModel)}
+        composable("ChatPage"){ ChatPage(navController)}
+        composable("createPin"){ createPin(navController, appointmentViewModel=appointmentViewModel)}
+        composable("reEnterPin"){ reEnterPin(navController, appointmentViewModel=appointmentViewModel)}
     }
 
 }
