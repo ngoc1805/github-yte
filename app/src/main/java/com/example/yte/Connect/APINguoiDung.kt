@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yte.address
@@ -52,6 +54,10 @@ data class updateSoDu(
     val idbenhnhan: String,
     val sodu : Int
 )
+data class updatePin(
+    val idBenhNhan: String,
+    val maPin: String
+)
 
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
@@ -70,6 +76,20 @@ interface APINguoiDung{
     suspend fun UpdateSodu(
         @Body updateSoDu: updateSoDu
     )
+
+    @POST("/post/update/mapin")
+    suspend fun UpdatePin(
+        @Body updatePin: updatePin
+    )
+    @GET("/get/mapin")
+    suspend fun hasMaPin(@Query("idBenhNhan") idBenhNhan: String)
+
+    @GET("/get/checkmapin")
+    suspend fun checkMaPin(
+        @Query("idBenhNhan") idBenhNhan: String,
+        @Query("maPin") maPin: String
+    )
+
 }
 
 class NguoiDungViewModel : ViewModel(){
@@ -78,6 +98,12 @@ class NguoiDungViewModel : ViewModel(){
     val addAccountResult: StateFlow<ApiResponse?> get() = _addUserResult
 
     var nguoiDung by mutableStateOf<NguoiDung?>(null)
+
+    private val _httpStatus = MutableLiveData<Int>()
+    val httpStatus: LiveData<Int> get() = _httpStatus
+
+    private val _httpStatusCMP = MutableLiveData<Int>()
+    val httpStatusCMP: LiveData<Int> get() = _httpStatusCMP
 
 
     fun addNguoiDung(
@@ -131,7 +157,7 @@ class NguoiDungViewModel : ViewModel(){
                 val nguoiDung = recipeServiceNguoiDung.getNguoiDungByIdTk(idtaikhoan)
                 this@NguoiDungViewModel.nguoiDung = nguoiDung
                 // Log dữ liệu để kiểm tra
-                Log.d("API_RESPONSE", "NguoiDung: $nguoiDung")
+                Log.d("API_RESPONSEMP", "NguoiDung: $nguoiDung")
             } catch (e: retrofit2.HttpException) {
                 if (e.code() == 404) {
                     Log.e("API_ERROR", "User not found for idtaikhoan: $idtaikhoan")
@@ -148,7 +174,51 @@ class NguoiDungViewModel : ViewModel(){
             val updatesodu = updateSoDu(idbenhnhan,sodu)
             recipeServiceNguoiDung.UpdateSodu(updatesodu)
         }
-
+    }
+    fun UpdatePin(idBenhNhan: String, maPin: String){
+        viewModelScope.launch {
+            val updatepin = updatePin(idBenhNhan,maPin)
+            recipeServiceNguoiDung.UpdatePin(updatepin)
+        }
+    }
+    fun hasPin(idBenhNhan: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                recipeServiceNguoiDung.hasMaPin(idBenhNhan)
+                _httpStatus.postValue(200)
+            } catch (e: retrofit2.HttpException) {
+                if (e.code() == 404) {
+                    _httpStatus.postValue(404)
+                } else {
+                    Log.e("API_ERROR", "HTTP Error: ${e.code()} - ${e.message()}")
+                    _httpStatus.postValue(e.code())
+                }
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Unknown Error: ${e.message}")
+                _httpStatus.postValue(500) // Trạng thái lỗi server 500
+            }
+        }
+    }
+    fun checkMaPin(idBenhNhan: String, maPin: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                recipeServiceNguoiDung.checkMaPin(idBenhNhan,maPin)
+                _httpStatusCMP.postValue(200)
+            } catch (e: retrofit2.HttpException) {
+                if (e.code() == 404) {
+                    _httpStatusCMP.postValue(404)
+                } else {
+                    Log.e("API_ERROR", "HTTP Error: ${e.code()} - ${e.message()}")
+                    _httpStatusCMP.postValue(e.code())
+                }
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Unknown Error: ${e.message}")
+                _httpStatusCMP.postValue(500) // Trạng thái lỗi server 500
+            }
+        }
+    }
+    fun resetHttpStatus() {
+        _httpStatusCMP.value = null
     }
 
 }

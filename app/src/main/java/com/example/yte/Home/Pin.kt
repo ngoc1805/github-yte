@@ -1,5 +1,6 @@
 package com.example.yte.Home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,31 +34,54 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.Circle
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.yte.Appointment.AppointmentViewModel
+import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.R
+import com.example.yte.idBenhNhan
 
 @Composable
-fun PinCodeScreen(onPinEntered: (String) -> Unit) {
+fun PinCodeScreen(
+    navController: NavController,
+    onPinEntered: () -> Unit,
+    onClicCloseButtom: () -> Unit,
+    nguoiDungViewModel: NguoiDungViewModel = viewModel(),
+    appointmentViewModel: AppointmentViewModel = viewModel()
+) {
+    val httpStatus by nguoiDungViewModel.httpStatusCMP.observeAsState()
     var pin by remember { mutableStateOf("") } // Trạng thái mã PIN
     var errorMessage by remember { mutableStateOf("") } // Lưu thông báo lỗi nếu nhập sai mã PIN
     val maxPinLength = 6 // Số ký tự tối đa
+    var isProcessing by remember { mutableStateOf(false) } // Trạng thái xử lý mã PIN
 
-    // Mã PIN đúng (có thể lấy từ cơ sở dữ liệu, hoặc giá trị lưu trong ứng dụng)
-    val correctPin = "123456" // Thay thế với mã PIN thực tế
+    LaunchedEffect(httpStatus) {
+        if (isProcessing) {
+            if (httpStatus == 200) {
+                onPinEntered() // Mã PIN đúng
+                pin = ""
+            } else {
+                errorMessage = "Mã PIN sai, vui lòng thử lại!"
+            }
+            nguoiDungViewModel.resetHttpStatus() // Đặt lại trạng thái trong ViewModel
+            isProcessing = false
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Đặt icon "X" ở góc phải trên cùng
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { onClicCloseButtom() },
             modifier = Modifier
-                .align(Alignment.TopEnd) // Đưa lên góc phải
-                .padding(16.dp) // Thêm khoảng cách nếu cần
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -105,62 +129,44 @@ fun PinCodeScreen(onPinEntered: (String) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Các nút số
                 (1..9).forEach { number ->
                     item {
                         NumberButton(
                             number = number.toString(),
                             onClick = {
-                                // Reset error message khi người dùng bắt đầu nhập lại
                                 if (errorMessage.isNotEmpty()) {
-                                    errorMessage = "" // Xóa thông báo lỗi
+                                    errorMessage = ""
                                 }
-
                                 if (pin.length < maxPinLength) {
                                     pin += number.toString()
                                 }
                                 if (pin.length == maxPinLength) {
-                                    // Kiểm tra mã PIN nhập vào
-                                    if (pin == correctPin) {
-                                        onPinEntered(pin) // Mã PIN đúng
-                                    } else {
-                                        // Mã PIN sai, hiển thị thông báo lỗi
-                                        errorMessage = "Mã PIN sai, vui lòng thử lại!"
-                                        pin = "" // Xóa mã PIN đã nhập để thử lại
-                                    }
+                                    isProcessing = true
+                                    nguoiDungViewModel.checkMaPin(idBenhNhan, pin)
                                 }
                             }
                         )
                     }
                 }
-                // Nút "0"
-                item { Spacer(modifier = Modifier.size(64.dp)) } // Chừa khoảng trống
+
+                item { Spacer(modifier = Modifier.size(64.dp)) }
                 item {
                     NumberButton(
                         number = "0",
                         onClick = {
-                            // Reset error message khi người dùng bắt đầu nhập lại
                             if (errorMessage.isNotEmpty()) {
-                                errorMessage = "" // Xóa thông báo lỗi
+                                errorMessage = ""
                             }
-
                             if (pin.length < maxPinLength) {
                                 pin += "0"
                             }
                             if (pin.length == maxPinLength) {
-                                // Kiểm tra mã PIN nhập vào
-                                if (pin == correctPin) {
-                                    onPinEntered(pin) // Mã PIN đúng
-                                } else {
-                                    // Mã PIN sai, hiển thị thông báo lỗi
-                                    errorMessage = "Mã PIN sai, vui lòng thử lại!"
-                                    pin = "" // Xóa mã PIN đã nhập để thử lại
-                                }
+                                isProcessing = true
+                                nguoiDungViewModel.checkMaPin(idBenhNhan, pin)
                             }
                         }
                     )
                 }
-                // Nút xóa
                 item {
                     IconButton(
                         onClick = {
@@ -171,7 +177,7 @@ fun PinCodeScreen(onPinEntered: (String) -> Unit) {
                         modifier = Modifier.size(64.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.delete), // Thay bằng icon xóa
+                            painter = painterResource(id = R.drawable.delete),
                             contentDescription = "Xóa",
                             tint = Color.Black
                         )
@@ -180,13 +186,14 @@ fun PinCodeScreen(onPinEntered: (String) -> Unit) {
             }
             TextButton(onClick = { /*TODO*/ }) {
                 Text(
-                    text = " Quên mã PIN",
+                    text = "Quên mã PIN",
                     color = Color.Blue
                 )
             }
         }
     }
 }
+
 //--------------------------------------------------------------
 @Composable
 fun createPin(
@@ -199,7 +206,7 @@ fun createPin(
     Box(modifier = Modifier.fillMaxSize()) {
         // Đặt icon "X" ở góc phải trên cùng
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopEnd) // Đưa lên góc phải
                 .padding(16.dp) // Thêm khoảng cách nếu cần
@@ -305,7 +312,8 @@ fun createPin(
 @Composable
 fun reEnterPin(
     navController: NavController,
-    appointmentViewModel: AppointmentViewModel = viewModel()
+    appointmentViewModel: AppointmentViewModel = viewModel(),
+    nguoiDungViewModel: NguoiDungViewModel = viewModel()
 ) {
     var pin by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
@@ -377,6 +385,7 @@ fun reEnterPin(
                                 if (pin.length == maxPinLength) {
                                     // Kiểm tra xem mã PIN có khớp không
                                     if (pin == originalPin) {
+                                        nguoiDungViewModel.UpdatePin(idBenhNhan, pin)
                                         navController.popBackStack() // Chuyển sang màn hình trước đó
                                     } else {
                                         errorMessage = "Mã PIN không khớp. Vui lòng thử lại."
@@ -400,6 +409,7 @@ fun reEnterPin(
                             }
                             if (pin.length == maxPinLength) {
                                 if (pin == originalPin) {
+                                    nguoiDungViewModel.UpdatePin(idBenhNhan,pin)
                                     navController.popBackStack() // Chuyển sang màn hình trước đó
                                 } else {
                                     errorMessage = "Mã PIN không khớp. Vui lòng thử lại."
@@ -461,13 +471,3 @@ fun NumberButton(number: String, onClick: () -> Unit) {
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun PinCodeScreenPreview(){
-    PinCodeScreen(
-        onPinEntered = { pin ->
-            // Print PIN for debugging in preview
-            println("Pin Entered: ")
-        }
-    )
-}

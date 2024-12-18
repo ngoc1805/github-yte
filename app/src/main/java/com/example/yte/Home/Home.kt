@@ -147,25 +147,46 @@ fun Home(
                     }
                 }
             }
-            else {
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    item {
-                        if (selectedTab == 3) {
-                            if (isLogin) {
-                                PersonalScreen(navController = navController)
-                                color = R.color.white
-                                appbarBackgroundColor = R.color.darkblue
-                                titles = "Cá nhân"
-                                alignment = Alignment.BottomCenter
-                            } else {
-                                isVisible = false
-                                navController.navigate("LoginSignUpScreen")
-                            }
+            else if( selectedTab == 3){
+               Card(modifier = Modifier.weight(1f)){
+                    if (isLogin) {
+                        // Đảm bảo rằng PersonalScreen hiển thị đầy đủ
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = Color.White
+                        ) {
+                            PersonalScreen(navController = navController)
                         }
+                        color = R.color.white
+                        appbarBackgroundColor = R.color.darkblue
+                        titles = "Cá nhân"
+                        alignment = Alignment.BottomCenter
+                    } else {
+                        isVisible = false
+                        navController.navigate("LoginSignUpScreen")
                     }
-
                 }
+
             }
+//            else {
+//                LazyColumn(modifier = Modifier.weight(1f)) {
+//                    item {
+//                        if (selectedTab == 3) {
+//                            if (isLogin) {
+//                                PersonalScreen(navController = navController)
+//                                color = R.color.white
+//                                appbarBackgroundColor = R.color.darkblue
+//                                titles = "Cá nhân"
+//                                alignment = Alignment.BottomCenter
+//                            } else {
+//                                isVisible = false
+//                                navController.navigate("LoginSignUpScreen")
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            }
         }
         TabRow(
             modifier = Modifier.fillMaxWidth(),

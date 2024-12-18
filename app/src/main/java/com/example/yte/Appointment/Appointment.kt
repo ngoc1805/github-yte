@@ -66,6 +66,7 @@ class AppointmentViewModel : ViewModel(){
     val selectedLichKham = mutableStateOf<LichKham?>(null)
     val ketQuaKham = mutableStateOf<KetQuaKham?>(null)
     val maPin = mutableStateOf("")
+    val maPin2 = mutableStateOf("")
 
 
 }
