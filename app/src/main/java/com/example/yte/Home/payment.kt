@@ -1,8 +1,10 @@
 package com.example.yte.Home
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,7 +18,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +41,7 @@ import com.example.yte.Api.CreateOrder
 import com.example.yte.AppBarView
 import com.example.yte.IdTaiKhoan
 import com.example.yte.Connect.NguoiDungViewModel
+import com.example.yte.DismissKeyboard
 import com.example.yte.R
 import com.example.yte.formatNumber
 import com.example.yte.idBenhNhan
@@ -82,6 +88,7 @@ class OrderPayment : ComponentActivity() {
                                 resultIntent.putExtra("paymentResult", "success")
                                 resultIntent.putExtra("paymentAmount", moneyAmount)
                                 setResult(Activity.RESULT_OK, resultIntent)
+
                                 finish()
                             }
                         }
@@ -153,10 +160,24 @@ fun Payment(
     viewModel: PaymentViewModel = viewModel(),
     nguoiDungViewModel: NguoiDungViewModel = viewModel()
 ) {
+
+
+
     val context = LocalContext.current
     val balance by viewModel.balance
     val money by viewModel.money
     val isLoading by viewModel.isLoading
+
+    val httpStatus by nguoiDungViewModel.httpStatus.observeAsState()
+    var hasMapin by remember{ mutableStateOf(false) }
+    var showPinCodeScreen by remember { mutableStateOf(false) } // Trạng thái để hiển thị PinCodeScreen
+    LaunchedEffect(idBenhNhan) {
+
+        nguoiDungViewModel.hasPin(idBenhNhan)
+    }
+    httpStatus?.let { status ->
+        hasMapin = status == 200
+    }
 
 
     // Sử dụng launcher để nhận kết quả từ OrderPayment activity
@@ -262,13 +283,18 @@ fun Payment(
         // Nút xác nhận
         Button(
             onClick = {
-                viewModel.updateLoadingState(true)
-                // Khởi động OrderPayment activity
-                val intent = Intent(context, OrderPayment::class.java)
-                intent.putExtra("moneyAmount", money)
-                launcher.launch(intent)
+                val activity = context as? Activity
+                val view = activity?.currentFocus
+                if (view != null) {
+                    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
 
-
+                    if (hasMapin == false) {
+                        navController.navigate("createPin")
+                    } else {
+                        showPinCodeScreen = true
+                    }
             },
             modifier = Modifier
                 .padding(start = 80.dp)
@@ -283,6 +309,33 @@ fun Payment(
             } else {
                 Text(text = "Xác nhận")
             }
+        }
+        //-------------
+
+        //-------------
+    }
+    if (showPinCodeScreen) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Full màn hình
+                .background(Color.White) // Nền trắng
+        ) {
+            PinCodeScreen(
+                navController = navController,
+                onPinEntered = {
+                    showPinCodeScreen = false
+//                        navController.navigate("Payment")
+                    viewModel.updateLoadingState(true)
+                    // Khởi động OrderPayment activity
+                    val intent = Intent(context, OrderPayment::class.java)
+                    intent.putExtra("moneyAmount", money)
+                    launcher.launch(intent)
+
+                },
+                onClicCloseButtom = {
+                    showPinCodeScreen = false
+                }
+            )
         }
     }
 }

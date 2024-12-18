@@ -1,5 +1,6 @@
 package com.example.yte.Appointment
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,6 +37,7 @@ import com.example.yte.AppBarView
 import com.example.yte.Connect.LichKhamViewModel
 import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.Connect.ThongBaoViewModel
+import com.example.yte.Home.PinCodeScreen
 
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
@@ -63,6 +66,20 @@ fun thanhtoan(
     var tienCoc = 100000
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
+
+    //
+    val httpStatus by nguoiDungViewModel.httpStatus.observeAsState()
+    var hasMapin by remember{ mutableStateOf(false) }
+    var showPinCodeScreen by remember { mutableStateOf(false) } // Trạng thái để hiển thị PinCodeScreen
+    LaunchedEffect(idBenhNhan) {
+
+        nguoiDungViewModel.hasPin(idBenhNhan)
+    }
+    httpStatus?.let { status ->
+        hasMapin = status == 200
+    }
+
+    //
 
 
     LaunchedEffect(IdTaiKhoan) {
@@ -127,28 +144,36 @@ fun thanhtoan(
                         dialogMessage = "Số dư không đủ, hãy nạp thêm"
                         showDialog = true
                     }else{
-                        soDu = soDu - tienCoc
-                        nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
-                        dialogMessage = "Thanh toán thành công"
-                        showDialog = true
-                        lichKhamViewModel.addlichKham(
-                            thanhToanViewModel.lichKhamId.value,
-                            idBenhNhan,
-                            thanhToanViewModel.bacSiId.value,
-                            thanhToanViewModel.ngayKham.value,
-                            thanhToanViewModel.gioKham.value,
-                            thanhToanViewModel.trangThai.value
-                        )
-                        thongBaoViewModel.addThongBao(
-                            idBenhNhan,
-                            "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ",
-                            "Payment"
-                        )
-                        thongBaoViewModel.addThongBao(
-                            idBenhNhan,
-                            "Bạn đã đặt thành công một lịch khám",
-                            "Home/1"
-                        )
+                        //
+                        if (hasMapin == false) {
+                            navController.navigate("createPin")
+                        } else {
+                            showPinCodeScreen = true
+                        }
+                        //
+
+//                        soDu = soDu - tienCoc
+//                        nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
+//                        dialogMessage = "Thanh toán thành công"
+//                        showDialog = true
+//                        lichKhamViewModel.addlichKham(
+//                            thanhToanViewModel.lichKhamId.value,
+//                            idBenhNhan,
+//                            thanhToanViewModel.bacSiId.value,
+//                            thanhToanViewModel.ngayKham.value,
+//                            thanhToanViewModel.gioKham.value,
+//                            thanhToanViewModel.trangThai.value
+//                        )
+//                        thongBaoViewModel.addThongBao(
+//                            idBenhNhan,
+//                            "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ",
+//                            "Payment"
+//                        )
+//                        thongBaoViewModel.addThongBao(
+//                            idBenhNhan,
+//                            "Bạn đã đặt thành công một lịch khám",
+//                            "Home/1"
+//                        )
                     }
 
                           },
@@ -185,6 +210,50 @@ fun thanhtoan(
                     }) {
                         androidx.compose.material.Text("OK")
                     }
+                }
+            )
+        }
+        //---------
+
+        //---------
+
+    }
+    if (showPinCodeScreen) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Full màn hình
+                .background(Color.White) // Nền trắng
+        ) {
+            PinCodeScreen(
+                navController = navController,
+                onPinEntered = {
+                    showPinCodeScreen = false
+                    soDu = soDu - tienCoc
+                    nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
+                    dialogMessage = "Thanh toán thành công"
+                    showDialog = true
+                    lichKhamViewModel.addlichKham(
+                        thanhToanViewModel.lichKhamId.value,
+                        idBenhNhan,
+                        thanhToanViewModel.bacSiId.value,
+                        thanhToanViewModel.ngayKham.value,
+                        thanhToanViewModel.gioKham.value,
+                        thanhToanViewModel.trangThai.value
+                    )
+                    thongBaoViewModel.addThongBao(
+                        idBenhNhan,
+                        "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ",
+                        "Payment"
+                    )
+                    thongBaoViewModel.addThongBao(
+                        idBenhNhan,
+                        "Bạn đã đặt thành công một lịch khám",
+                        "Home/1"
+                    )
+
+                },
+                onClicCloseButtom = {
+                    showPinCodeScreen = false
                 }
             )
         }

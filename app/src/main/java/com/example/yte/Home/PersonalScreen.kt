@@ -91,12 +91,14 @@ fun PersonalScreen(
                 text = "Nạp tiền",
                 onClick = {
 
-                    if(hasMapin == false){
-                        navController.navigate("createPin")
-                    }
-                    else{
-                        showPinCodeScreen = true
-                    }
+//                    if(hasMapin == false){
+//                        navController.navigate("createPin")
+//                    }
+//                    else{
+//                        showPinCodeScreen = true
+//                    }
+//                }
+                    navController.navigate("Payment")
                 }
 
             )
@@ -125,25 +127,25 @@ fun PersonalScreen(
             }
 
         }
-        if (showPinCodeScreen) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() // Full màn hình
-                    .background(Color.White) // Nền trắng
-            ) {
-                PinCodeScreen(
-                    navController = navController,
-                    onPinEntered = {
-                        showPinCodeScreen = false
-                        navController.navigate("Payment")
-
-                    },
-                    onClicCloseButtom = {
-                        showPinCodeScreen = false
-                    }
-                )
-            }
-        }
+//        if (showPinCodeScreen) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize() // Full màn hình
+//                    .background(Color.White) // Nền trắng
+//            ) {
+//                PinCodeScreen(
+//                    navController = navController,
+//                    onPinEntered = {
+//                        showPinCodeScreen = false
+//                        navController.navigate("Payment")
+//
+//                    },
+//                    onClicCloseButtom = {
+//                        showPinCodeScreen = false
+//                    }
+//                )
+//            }
+//        }
     }
 }
 
