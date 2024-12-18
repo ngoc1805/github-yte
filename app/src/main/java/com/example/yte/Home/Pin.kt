@@ -69,6 +69,7 @@ fun PinCodeScreen(
                 pin = ""
             } else {
                 errorMessage = "Mã PIN sai, vui lòng thử lại!"
+                pin = ""
             }
             nguoiDungViewModel.resetHttpStatus() // Đặt lại trạng thái trong ViewModel
             isProcessing = false
