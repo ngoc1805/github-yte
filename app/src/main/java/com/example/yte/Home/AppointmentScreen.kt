@@ -44,12 +44,16 @@ import com.example.yte.Appointment.AppointmentViewModel
 import com.example.yte.Connect.DoctorViewModel
 import com.example.yte.Connect.LichKham
 import com.example.yte.Connect.LichKhamViewModel
+import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.Connect.ThongBaoViewModel
+import com.example.yte.Firebase.ChatViewModel
 import com.example.yte.R
 import com.example.yte.chuyenDoiGio
 import com.example.yte.chuyenDoiNgay
+import com.example.yte.fcmToken
 import com.example.yte.formatNumber
 import com.example.yte.idBenhNhan
+import com.example.yte.soDu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,6 +106,8 @@ fun ApoimentCard(
     lichKhamViewModel: LichKhamViewModel = viewModel(),
     thongBaoViewModel: ThongBaoViewModel = viewModel(),
     appointmentViewModel: AppointmentViewModel = viewModel(),
+    nguoiDungViewModel: NguoiDungViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel(),
     onClicked: () -> Unit = {}
 ){
     var doctorName by remember { mutableStateOf("Đang tải...") }
@@ -241,6 +247,22 @@ fun ApoimentCard(
                         "Bạn đã hủy thành công một lịch hẹn",
                         "History"
                     )
+                    soDu = soDu + 100000
+                    nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
+                    chatViewModel.sendMessage(
+                        title = "Biến động số dư",
+                        body = "Bạn đã được hoàn 100.000VNĐ, số dư: ${formatNumber(
+                            soDu)}VNĐ",
+                        remoteToken = fcmToken,
+                        isBroadcast = false
+                    )
+                    thongBaoViewModel.addThongBao(
+                        idBenhNhan,
+                        "Bạn đã được hoàn 100.000VNĐ, số dư: ${formatNumber(
+                            soDu)}VNĐ",
+                        "Payment"
+                    )
+
                     showDialog = false
 
                 }) {

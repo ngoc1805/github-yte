@@ -37,10 +37,12 @@ import com.example.yte.AppBarView
 import com.example.yte.Connect.LichKhamViewModel
 import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.Connect.ThongBaoViewModel
+import com.example.yte.Firebase.ChatViewModel
 import com.example.yte.Home.PinCodeScreen
 
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
+import com.example.yte.fcmToken
 import com.example.yte.formatNumber
 import com.example.yte.idBenhNhan
 import com.example.yte.soDu
@@ -60,7 +62,8 @@ fun thanhtoan(
     thanhToanViewModel: ThanhToanViewModel = viewModel(),
     lichKhamViewModel: LichKhamViewModel = viewModel(),
     nguoiDungViewModel: NguoiDungViewModel = viewModel(),
-    thongBaoViewModel: ThongBaoViewModel = viewModel()
+    thongBaoViewModel: ThongBaoViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel()
 ){
     var isAppoint by remember { mutableStateOf(false) }
     var tienCoc = 100000
@@ -243,8 +246,15 @@ fun thanhtoan(
                     thongBaoViewModel.addThongBao(
                         idBenhNhan,
                         "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ, số dư: ${formatNumber(
-                            soDu-tienCoc)}",
+                            soDu)}VNĐ",
                         "Payment"
+                    )
+                    chatViewModel.sendMessage(
+                        title = "Biến động số dư",
+                        body = "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ, số dư: ${formatNumber(
+                            soDu)}VNĐ",
+                        remoteToken = fcmToken,
+                        isBroadcast = false
                     )
                     thongBaoViewModel.addThongBao(
                         idBenhNhan,

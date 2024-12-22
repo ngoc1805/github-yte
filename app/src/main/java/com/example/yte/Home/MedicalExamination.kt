@@ -57,9 +57,11 @@ import com.example.yte.Connect.KhamChucNangViewModel
 import com.example.yte.Connect.LichKhamViewModel
 import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.Connect.ThongBaoViewModel
+import com.example.yte.Firebase.ChatViewModel
 import com.example.yte.R
 import com.example.yte.chuyenDoiGio
 import com.example.yte.chuyenDoiNgay
+import com.example.yte.fcmToken
 import com.example.yte.formatNumber
 import com.example.yte.gioiTinh
 import com.example.yte.hoTen
@@ -78,7 +80,8 @@ fun MedicalExamination(
     ketQuaKhamViewModel: KetQuaKhamViewModel = viewModel(),
     nguoiDungViewModel: NguoiDungViewModel = viewModel(),
     thongBaoViewModel: ThongBaoViewModel = viewModel(),
-    lichKhamViewModel: LichKhamViewModel = viewModel()
+    lichKhamViewModel: LichKhamViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel()
 ) {
     val selecLichKham = appointmentViewModel.selectedLichKham.value
     var idBacSi by remember { mutableStateOf("") }
@@ -380,9 +383,17 @@ fun MedicalExamination(
                     soDu = soDu - (tienKhamChuaTra+tongTienKhamChucNang)
                     nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
 
+                    chatViewModel.sendMessage(
+                        title = "Biến động số dư",
+                        body = "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ, số dư: ${formatNumber(
+                            soDu)}VNĐ",
+                        remoteToken = fcmToken,
+                        isBroadcast = false
+                    )
                     thongBaoViewModel.addThongBao(
                         idBenhNhan,
-                        "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ",
+                        "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ, số dư: ${formatNumber(
+                            soDu)}VNĐ",
                         "Payment"
                     )
                     lichKhamViewModel.updateLichKhamTrangThai(idLichKham, "Đã thanh toán")

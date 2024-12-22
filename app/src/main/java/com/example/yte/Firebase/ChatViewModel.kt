@@ -1,5 +1,6 @@
 package com.example.yte.Firebase
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -39,28 +40,26 @@ class ChatViewModel: ViewModel() {
             messageText = message
         )
     }
-    fun sendMessage(isBroadcast: Boolean){
+    fun sendMessage(title: String, body: String, remoteToken: String, isBroadcast: Boolean) {
         viewModelScope.launch {
             val messageDto = SendMessageDto(
-                to = if(isBroadcast) null else state.remoteToken,
+                to = if (isBroadcast) null else remoteToken,
                 notification = NotificationBody(
-                    title = "New message",
-                    body = state.messageText
+                    title = title,
+                    body = body
                 )
             )
             try {
-                if (isBroadcast){
+                if (isBroadcast) {
                     api.broadcast(messageDto)
-                }else{
+                } else {
                     api.sendMessage(messageDto)
                 }
-                state = state.copy(
-                    messageText = ""
-                )
-            }catch (e: HttpException){
-                e.printStackTrace()
-            }catch (e: IOException){
-                e.printStackTrace()
+                Log.d("FCM", "Message sent: $title - $body")
+            } catch (e: HttpException) {
+                Log.e("FCM", "HTTP Error: ${e.message}")
+            } catch (e: IOException) {
+                Log.e("FCM", "Network Error: ${e.message}")
             }
         }
     }
