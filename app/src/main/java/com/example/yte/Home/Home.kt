@@ -1,6 +1,7 @@
 package com.example.yte.Home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,11 +51,16 @@ import com.example.yte.CCCD
 import com.example.yte.Connect.ThongBaoViewModel
 
 import com.example.yte.Sđt
+import com.example.yte.fcmToken
 import com.example.yte.gioiTinh
 import com.example.yte.idBenhNhan
 import com.example.yte.ngaySinh
 import com.example.yte.queQuan
 import com.example.yte.soDu
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
+import kotlinx.coroutines.tasks.await
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,6 +83,7 @@ fun Home(
     var isLoading by remember { mutableStateOf(true) }
     var hasnoitice by remember { mutableStateOf(true) }
 
+
     LaunchedEffect(IdTaiKhoan) {
         nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
 
@@ -90,6 +97,20 @@ fun Home(
     queQuan = nguoiDungViewModel.nguoiDung?.quequan ?: ""
     gioiTinh = nguoiDungViewModel.nguoiDung?.gioitinh ?: ""
     soDu = nguoiDungViewModel.nguoiDung?.sodu ?: 0
+    LaunchedEffect(idBenhNhan) {
+        fcmToken = Firebase.messaging.token.await()
+        nguoiDungViewModel.UpdateFcmToken(idBenhNhan, fcmToken)
+    }
+    LaunchedEffect(Unit) {
+        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val installationId = task.result
+                Log.d("Firebase", "Installation ID: $installationId")
+            } else {
+                Log.e("Firebase", "Không thể lấy Installation ID", task.exception)
+            }
+        }
+    }
 
 
     Column(modifier = Modifier.fillMaxSize()) {

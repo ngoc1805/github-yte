@@ -1,11 +1,15 @@
 package com.example.yte.Connect
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -44,6 +48,11 @@ data class LoGin(
 data class tenTkResponse(
     val tentk : String
 )
+data class changePassWordRequest(
+    val idTaiKhoan: Int,
+    val currentPassWord: String,
+    val newPassWord: String
+)
 // Data class cho request body khi tạo tài khoản
 @Parcelize
 data class TaiKhoanRequest(
@@ -80,6 +89,10 @@ interface APITaiKhoan{
     suspend fun login(
         @Body tkmk: LoGin
     ): ApiResponse1
+    @POST("post/changepassword")
+    suspend fun changePassWord(
+        @Body changePassWord: changePassWordRequest
+    )
 }
 
 class TaiKhoanViewModel : ViewModel(){
@@ -98,6 +111,9 @@ class TaiKhoanViewModel : ViewModel(){
 
     private val _id = MutableStateFlow<IdResponse?>(null)
     val id: StateFlow<IdResponse?> get() = _id
+
+    private val _httpStatus = MutableLiveData<Int>()
+    val httpStatus: LiveData<Int> get() = _httpStatus
 
     // Hàm gọi API để kiểm tra tài khoản
     fun checkTaiKhoan(tenTk: String) {
@@ -161,6 +177,25 @@ class TaiKhoanViewModel : ViewModel(){
             _id.value = recipeServiceTaiKhoan.getId(tenTkResponse)
 //            val id_taikhoan = recipeServiceTaiKhoan.getId(tenTkResponse)
 //            this@TaiKhoanViewModel.id_taikhoan = id_taikhoan
+        }
+    }
+    fun changePassWord(idTaiKhoan: Int, currentPassWord: String, newPassWord: String){
+        viewModelScope.launch {
+            try {
+                val changePassWordRequest = changePassWordRequest(idTaiKhoan,currentPassWord,newPassWord)
+                recipeServiceTaiKhoan.changePassWord(changePassWordRequest)
+                _httpStatus.postValue(200)
+
+            }catch (e: retrofit2.HttpException) {
+                if (e.code() == 404) {
+                    _httpStatus.postValue(404)
+                } else {
+                    Log.e("API_ERROR", "HTTP Error: ${e.code()} - ${e.message()}")
+                    _httpStatus.postValue(e.code())
+                }
+            }catch (e:Exception){
+                _httpStatus.value = -1
+            }
         }
     }
 }

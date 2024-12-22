@@ -1,6 +1,11 @@
 package com.example.yte
 
+import android.Manifest
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
@@ -16,6 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -50,8 +59,12 @@ import com.example.yte.News.detailViewModel
 import com.example.yte.News.newsDetail
 import com.example.yte.News.newsViewModel
 import com.example.yte.ui.theme.YTETheme
+import com.google.firebase.messaging.FirebaseMessaging
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
+import android.app.NotificationChannel
+
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -62,31 +75,58 @@ class MainActivity : ComponentActivity() {
         // ZaloPay SDK Init
         ZaloPaySDK.init(2553, Environment.SANDBOX)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestNotificationPermission()
+
+
+
+
         enableEdgeToEdge()
+
         setContent {
             YTETheme {
-                Scaffold( modifier = Modifier.fillMaxSize()
-                    /*.statusBarsPadding()*/) { innerPadding ->
-                   DismissKeyboard {
-                       val navController = rememberNavController()
-                       val appointmentViewModel: AppointmentViewModel = viewModel()
-                       val detailViewModel: detailViewModel = viewModel()
-                       val signUpViewModel: SignUpViewModel = viewModel()
-                       val thanhToanViewModel: ThanhToanViewModel = viewModel()
-                       AppnavHost(
-                           navController = navController,
-                           appointmentViewModel = appointmentViewModel,
-                           detailViewModel = detailViewModel,
-                           signUpViewModel = signUpViewModel,
-                           thanhToanViewModel = thanhToanViewModel
-                       )
-                   }
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                    /*.statusBarsPadding()*/
+                ) { innerPadding ->
+                    DismissKeyboard {
+                        val navController = rememberNavController()
+                        val appointmentViewModel: AppointmentViewModel = viewModel()
+                        val detailViewModel: detailViewModel = viewModel()
+                        val signUpViewModel: SignUpViewModel = viewModel()
+                        val thanhToanViewModel: ThanhToanViewModel = viewModel()
+                        AppnavHost(
+                            navController = navController,
+                            appointmentViewModel = appointmentViewModel,
+                            detailViewModel = detailViewModel,
+                            signUpViewModel = signUpViewModel,
+                            thanhToanViewModel = thanhToanViewModel
+                        )
+                    }
 
 
                 }
             }
         }
     }
+
+    private fun requestNotificationPermission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
+        }
+    }
+
+
 }
 val ipCuaNgoc = "192.168.0.102"
 val address = "http://$ipCuaNgoc:8080/"
@@ -103,6 +143,7 @@ var queQuan  by mutableStateOf("")
 var gioiTinh  by mutableStateOf("")
 var soDu  by mutableStateOf(0)
 var IdTaiKhoan  by mutableStateOf(0)
+var fcmToken by mutableStateOf("")
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -161,6 +202,7 @@ fun AppnavHost(
         composable("ChatPage"){ ChatPage(navController)}
         composable("createPin"){ createPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("reEnterPin"){ reEnterPin(navController, appointmentViewModel=appointmentViewModel)}
+        composable("ChangePassWord"){ ChangePassWord(navController)}
     }
 
 }

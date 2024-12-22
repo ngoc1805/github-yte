@@ -154,7 +154,8 @@ fun LoginScreen(
 
                                                 }
                                             }
-                                        }else if(isLogin == false){
+                                        }
+                                        else if(isLogin == false){
                                             withContext(Dispatchers.Main) {
                                                 dialogMessage = "Đăng nhập thất bại"
                                                 showDialog = true
@@ -184,6 +185,16 @@ fun LoginScreen(
                 }
             }
 
+//        LaunchedEffect(isLogin) {
+//            if(isLogin == true){
+//                dialogMessage = "Đăng nhập thành công "
+//                showDialog = true
+//            }
+//            else{
+//                dialogMessage = "Đăng nhập thất bại"
+//                showDialog = true
+//            }
+//        }
 
             if (showDialog) {
                 AlertDialog(

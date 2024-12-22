@@ -104,7 +104,7 @@ fun PersonalScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             setCard(imageVector = Icons.Default.Lock, text = "Đổi mật khẩu",
-                onClick = {navController.navigate("createPin")})
+                onClick = {navController.navigate("ChangePassWord")})
             Spacer(modifier = Modifier.height(2.dp))
             setCard(imageVector = Icons.Default.Delete, text = "Xóa tài khoản")
             Spacer(modifier = Modifier.height(2.dp))

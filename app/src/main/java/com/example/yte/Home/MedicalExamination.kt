@@ -95,6 +95,8 @@ fun MedicalExamination(
     var dialogMessage by remember { mutableStateOf("") }
     val lichkham by lichKhamViewModel.lichKham.observeAsState()
     var trangThai by remember { mutableStateOf("") }
+    var tienKhamChuaTra = giaKham - 100000
+    var tongTien = tienKhamChuaTra+tongTienKhamChucNang
 
     //
     val httpStatus1 by nguoiDungViewModel.httpStatus.observeAsState()
@@ -153,7 +155,7 @@ fun MedicalExamination(
 //    httpStatus?.let { status ->
 //        isThanhToan = status == 200
 //    }
-    var tienKhamChuaTra = giaKham - 100000
+
 
     // Lấy danh sách KhamChucNang và thông tin ChucNang
     LaunchedEffect(idLichKham) {
@@ -363,35 +365,39 @@ fun MedicalExamination(
             Text(text = "Thanh toán")
         }
         Spacer(modifier = Modifier.height(8.dp))
-                if (showPinCodeScreen) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() // Full màn hình
-                    .background(Color.White) // Nền trắng
-            ) {
-                PinCodeScreen(
-                    navController = navController,
-                    onPinEntered = {
-                        showPinCodeScreen = false
-                        soDu = soDu - (tienKhamChuaTra+tongTienKhamChucNang)
-                        nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
 
-                        thongBaoViewModel.addThongBao(
-                            idBenhNhan,
-                            "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ",
-                            "Payment"
-                        )
-                        lichKhamViewModel.updateLichKhamTrangThai(idLichKham, "Đã thanh toán")
-                        ketQuaKhamViewModel.updateTrangThaiThanhToan(idLichKham)
-                        dialogMessage = "Thanh toán thành công"
-                        showDialog = true
+    }
+    if (showPinCodeScreen) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Full màn hình
+                .background(Color.White) // Nền trắng
+        ) {
+            PinCodeScreen(
+                navController = navController,
+                onPinEntered = {
+                    showPinCodeScreen = false
+                    soDu = soDu - (tienKhamChuaTra+tongTienKhamChucNang)
+                    nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
 
-                    },
-                    onClicCloseButtom = {
-                        showPinCodeScreen = false
-                    }
-                )
-            }
+                    thongBaoViewModel.addThongBao(
+                        idBenhNhan,
+                        "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ",
+                        "Payment"
+                    )
+                    lichKhamViewModel.updateLichKhamTrangThai(idLichKham, "Đã thanh toán")
+                    ketQuaKhamViewModel.updateTrangThaiThanhToan(idLichKham)
+                    dialogMessage = "Thanh toán thành công"
+                    tienKhamChuaTra = 0
+                    tongTienKhamChucNang = 0
+                    tongTien = 0
+                    showDialog = true
+
+                },
+                onClicCloseButtom = {
+                    showPinCodeScreen = false
+                }
+            )
         }
     }
     if (showDialog) {

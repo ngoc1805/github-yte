@@ -326,6 +326,20 @@ fun AppBarView(
                         }
                     }
                     //
+                    if (title.contains("Đổi mật khẩu")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
                 }
             }
         )

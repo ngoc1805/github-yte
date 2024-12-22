@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,6 +57,13 @@ android {
 }
 
 dependencies {
+
+
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation ("com.google.firebase:firebase-inappmessaging")
+    implementation ("com.google.firebase:firebase-inappmessaging-display")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 

@@ -58,6 +58,10 @@ data class updatePin(
     val idBenhNhan: String,
     val maPin: String
 )
+data class updateFCMTOKEN(
+    val idBenhNhan: String,
+    val fcmToken: String
+)
 
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
@@ -81,6 +85,10 @@ interface APINguoiDung{
     suspend fun UpdatePin(
         @Body updatePin: updatePin
     )
+    @POST("/post/update/fcmtoken")
+    suspend fun  UpdateFcmToken(
+        @Body updateFcmToken: updateFCMTOKEN
+    )
     @GET("/get/mapin")
     suspend fun hasMaPin(@Query("idBenhNhan") idBenhNhan: String)
 
@@ -102,8 +110,8 @@ class NguoiDungViewModel : ViewModel(){
     private val _httpStatus = MutableLiveData<Int>()
     val httpStatus: LiveData<Int> get() = _httpStatus
 
-    private val _httpStatusCMP = MutableLiveData<Int>()
-    val httpStatusCMP: LiveData<Int> get() = _httpStatusCMP
+    private val _httpStatusCMP = MutableLiveData<Int?>()
+    val httpStatusCMP: LiveData<Int?> get() = _httpStatusCMP
 
 
     fun addNguoiDung(
@@ -179,6 +187,18 @@ class NguoiDungViewModel : ViewModel(){
         viewModelScope.launch {
             val updatepin = updatePin(idBenhNhan,maPin)
             recipeServiceNguoiDung.UpdatePin(updatepin)
+        }
+    }
+    fun UpdateFcmToken(idBenhNhan: String, fcmToken: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API để cập nhật FCM token cho bệnh nhân
+                val updatefcmtoken = updateFCMTOKEN(idBenhNhan, fcmToken)
+                recipeServiceNguoiDung.UpdateFcmToken(updatefcmtoken)
+                Log.d("FCM", "FCM Token đã được cập nhật thành công")
+            } catch (e: Exception) {
+                Log.e("FCM", "Lỗi khi cập nhật FCM token: ${e.message}")
+            }
         }
     }
     fun hasPin(idBenhNhan: String) {

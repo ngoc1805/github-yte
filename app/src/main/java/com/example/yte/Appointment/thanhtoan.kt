@@ -242,7 +242,8 @@ fun thanhtoan(
                     )
                     thongBaoViewModel.addThongBao(
                         idBenhNhan,
-                        "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ",
+                        "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ, số dư: ${formatNumber(
+                            soDu-tienCoc)}",
                         "Payment"
                     )
                     thongBaoViewModel.addThongBao(
