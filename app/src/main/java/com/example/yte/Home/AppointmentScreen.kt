@@ -52,6 +52,7 @@ import com.example.yte.chuyenDoiGio
 import com.example.yte.chuyenDoiNgay
 import com.example.yte.fcmToken
 import com.example.yte.formatNumber
+import com.example.yte.hoTen
 import com.example.yte.idBenhNhan
 import com.example.yte.soDu
 import kotlinx.coroutines.CoroutineScope
@@ -251,7 +252,7 @@ fun ApoimentCard(
                     nguoiDungViewModel.UpdatSoDu(idBenhNhan, soDu)
                     chatViewModel.sendMessage(
                         title = "Biến động số dư",
-                        body = "Bạn đã được hoàn 100.000VNĐ, số dư: ${formatNumber(
+                        body = "$hoTen ơi \nBạn đã được hoàn 100.000VNĐ\nSố dư: ${formatNumber(
                             soDu)}VNĐ",
                         remoteToken = fcmToken,
                         isBroadcast = false

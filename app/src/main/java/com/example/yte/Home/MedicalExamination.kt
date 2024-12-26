@@ -385,7 +385,7 @@ fun MedicalExamination(
 
                     chatViewModel.sendMessage(
                         title = "Biến động số dư",
-                        body = "Bạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ, số dư: ${formatNumber(
+                        body = "${hoTen} ơi \nBạn đã thanh toán thành công ${formatNumber(tienKhamChuaTra+tongTienKhamChucNang)}VNĐ\nSố dư: ${formatNumber(
                             soDu)}VNĐ",
                         remoteToken = fcmToken,
                         isBroadcast = false

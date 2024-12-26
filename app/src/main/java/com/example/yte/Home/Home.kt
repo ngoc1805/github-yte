@@ -50,7 +50,7 @@ import com.example.yte.isLogin
 import com.example.yte.CCCD
 import com.example.yte.Connect.ThongBaoViewModel
 
-import com.example.yte.Sđt
+import com.example.yte.Sdt
 import com.example.yte.fcmToken
 import com.example.yte.gioiTinh
 import com.example.yte.idBenhNhan
@@ -91,7 +91,7 @@ fun Home(
     }
     idBenhNhan = nguoiDungViewModel.nguoiDung?.idBenhNhan?:""
     hoTen = nguoiDungViewModel.nguoiDung?.hoten ?: ""
-    Sđt = nguoiDungViewModel.nguoiDung?.sdt ?: ""
+    Sdt = nguoiDungViewModel.nguoiDung?.sdt ?: ""
     ngaySinh = nguoiDungViewModel.nguoiDung?.ngaysinh ?: ""
     CCCD = nguoiDungViewModel.nguoiDung?.cccd ?: ""
     queQuan = nguoiDungViewModel.nguoiDung?.quequan ?: ""
@@ -99,6 +99,7 @@ fun Home(
     soDu = nguoiDungViewModel.nguoiDung?.sodu ?: 0
     LaunchedEffect(idBenhNhan) {
         fcmToken = Firebase.messaging.token.await()
+        Log.d("fmctoken","$fcmToken")
         nguoiDungViewModel.UpdateFcmToken(idBenhNhan, fcmToken)
     }
     LaunchedEffect(Unit) {

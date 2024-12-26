@@ -1,6 +1,8 @@
 package com.example.yte
 
 import android.Manifest
+import android.app.Activity
+import android.app.Application
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
@@ -63,6 +65,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
 import android.app.NotificationChannel
+import com.example.yte.Login_SignUp.LoginViewModel
+//import com.example.yte.Otp.PhoneAuthScreen
+//import dagger.hilt.android.AndroidEntryPoint
+//import dagger.hilt.android.HiltAndroidApp
 
 
 
@@ -93,13 +99,16 @@ class MainActivity : ComponentActivity() {
                         val appointmentViewModel: AppointmentViewModel = viewModel()
                         val detailViewModel: detailViewModel = viewModel()
                         val signUpViewModel: SignUpViewModel = viewModel()
+                        val loginViewModel: LoginViewModel = viewModel()
                         val thanhToanViewModel: ThanhToanViewModel = viewModel()
                         AppnavHost(
                             navController = navController,
                             appointmentViewModel = appointmentViewModel,
                             detailViewModel = detailViewModel,
                             signUpViewModel = signUpViewModel,
-                            thanhToanViewModel = thanhToanViewModel
+                            loginViewModel=loginViewModel,
+                            thanhToanViewModel = thanhToanViewModel,
+//                            activity = this
                         )
                     }
 
@@ -136,7 +145,7 @@ var isLogin by mutableStateOf(false)
 
 var idBenhNhan  by mutableStateOf("")
 var hoTen  by mutableStateOf("")
-var Sđt  by mutableStateOf("")
+var Sdt  by mutableStateOf("")
 var ngaySinh by mutableStateOf("")
 var CCCD  by mutableStateOf("")
 var queQuan  by mutableStateOf("")
@@ -153,14 +162,16 @@ fun AppnavHost(
     appointmentViewModel: AppointmentViewModel,
     detailViewModel: detailViewModel,
     signUpViewModel: SignUpViewModel,
-    thanhToanViewModel: ThanhToanViewModel
+    thanhToanViewModel: ThanhToanViewModel,
+    loginViewModel: LoginViewModel,
+//    activity: Activity
 
     ){
     NavHost(
         navController = navController,
         startDestination = "LoginSignUpScreen"
     ) {
-        composable("LoginSignUpScreen") { LoginSignUpScreen(navController,signUpViewModel=signUpViewModel)}
+        composable("LoginSignUpScreen") { LoginSignUpScreen(navController,signUpViewModel=signUpViewModel, loginViewModel = loginViewModel)}
         composable("Home/{initialTab}") {backStackEntry ->
             val initialTab = backStackEntry.arguments?.getString("initialTab")?.toIntOrNull() ?: 0
             Home(
@@ -203,9 +214,12 @@ fun AppnavHost(
         composable("createPin"){ createPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("reEnterPin"){ reEnterPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("ChangePassWord"){ ChangePassWord(navController)}
+//        composable("PhoneAuthScreen"){ PhoneAuthScreen(navController = navController, activity = activity, loginViewModel = loginViewModel)}
     }
 
 }
+
+
 
 
 

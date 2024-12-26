@@ -185,7 +185,7 @@ fun PinCodeScreen(
                     }
                 }
             }
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = {  }) {
                 Text(
                     text = "Quên mã PIN",
                     color = Color.Blue

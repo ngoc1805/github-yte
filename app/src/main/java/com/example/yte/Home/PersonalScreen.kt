@@ -56,7 +56,8 @@ import com.example.yte.CCCD
 import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.IdTaiKhoan
 import com.example.yte.R
-import com.example.yte.Sđt
+import com.example.yte.Sdt
+import com.example.yte.fcmToken
 import com.example.yte.gioiTinh
 import com.example.yte.hoTen
 import com.example.yte.idBenhNhan
@@ -90,17 +91,8 @@ fun PersonalScreen(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_monetization_on_24),
                 text = "Nạp tiền",
                 onClick = {
-
-//                    if(hasMapin == false){
-//                        navController.navigate("createPin")
-//                    }
-//                    else{
-//                        showPinCodeScreen = true
-//                    }
-//                }
                     navController.navigate("Payment")
                 }
-
             )
             Spacer(modifier = Modifier.height(24.dp))
             setCard(imageVector = Icons.Default.Lock, text = "Đổi mật khẩu",
@@ -110,21 +102,23 @@ fun PersonalScreen(
             Spacer(modifier = Modifier.height(2.dp))
             setCard(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout_24),
-                text = "Đăng xuất"
-            ) {
-                IdTaiKhoan = 0
-                isLogin = false
-                idBenhNhan = ""
-                hoTen = ""
-                Sđt = ""
-                ngaySinh =""
-                CCCD =""
-                queQuan =""
-                gioiTinh=""
-                soDu =0
-
-                navController.navigate("LoginSignUpScreen")
-            }
+                text = "Đăng xuất",
+                onClick = {
+                    fcmToken = ""
+                    nguoiDungViewModel.UpdateFcmToken(idBenhNhan, fcmToken)
+                    IdTaiKhoan = 0
+                    isLogin = false
+                    idBenhNhan = ""
+                    hoTen = ""
+                    Sdt = ""
+                    ngaySinh =""
+                    CCCD =""
+                    queQuan =""
+                    gioiTinh=""
+                    soDu =0
+                    navController.navigate("LoginSignUpScreen")
+                }
+            )
 
         }
 //        if (showPinCodeScreen) {

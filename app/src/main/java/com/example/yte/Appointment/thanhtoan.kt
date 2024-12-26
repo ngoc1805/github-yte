@@ -44,6 +44,7 @@ import com.example.yte.IdTaiKhoan
 import com.example.yte.R
 import com.example.yte.fcmToken
 import com.example.yte.formatNumber
+import com.example.yte.hoTen
 import com.example.yte.idBenhNhan
 import com.example.yte.soDu
 
@@ -251,7 +252,7 @@ fun thanhtoan(
                     )
                     chatViewModel.sendMessage(
                         title = "Biến động số dư",
-                        body = "Bạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ, số dư: ${formatNumber(
+                        body = "${hoTen} ơi \nBạn đã thanh toán thành công ${formatNumber(tienCoc)}VNĐ\nSố dư: ${formatNumber(
                             soDu)}VNĐ",
                         remoteToken = fcmToken,
                         isBroadcast = false
