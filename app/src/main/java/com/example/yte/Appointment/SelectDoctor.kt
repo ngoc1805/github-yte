@@ -62,7 +62,7 @@ fun ClinicDetailScreen(
             title = "Chọn bác sĩ",
             color = R.color.white ,
             backgroundColor = R.color.darkblue,
-            alignment = Alignment.Center,
+            alignment = Alignment.BottomCenter,
             onDeleteNavClicked = {navController.popBackStack()},
             isVisible = true
         )

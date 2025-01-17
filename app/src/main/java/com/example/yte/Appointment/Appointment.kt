@@ -129,7 +129,7 @@ fun Appointment(
                                 bacSiId = doctor.idBacSi
 
                                 Text(
-                                    text = "Bác sĩ: ${doctor.idBacSi} + ${doctor.hoTen}",
+                                    text = "Bác sĩ: ${doctor.idBacSi} - ${doctor.hoTen}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -229,7 +229,7 @@ fun Appointment(
             ) {
             Text(text = "Xác nhận")
         }
-        Text(text = "$idBenhNhan+ $bacSiId + $ngayKham +$gioKham+ $trangThai")
+//        Text(text = "$idBenhNhan+ $bacSiId + $ngayKham +$gioKham+ $trangThai")
 
 
 
@@ -244,7 +244,8 @@ fun AppointmentTimesCard(
 ) {
     val times = listOf(
         "7:00", "7:15", "7:30", "7:45", "8:00", "8:15",
-        "8:30", "8:45", "9:00", "22:00"
+        "8:30", "8:45", "9:00", "14:00", "14:15", "14:30",
+        "14:45", "15:00","15:15", "15:30", "15:45"
     )
     var selectedTime by remember { mutableStateOf<String?>(null) }
     val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())

@@ -28,12 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.camera.core.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -51,6 +53,30 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.Executors
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
+import java.util.concurrent.ExecutorService
+import androidx.camera.core.ImageProxy
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import com.google.ar.core.ImageFormat
 
 @Composable
 fun Information(
@@ -66,9 +92,7 @@ fun Information(
     val matKhau = signUpViewModel.passWord
     val loaiTk = loaitaikhoa
     var showDialog by remember { mutableStateOf(false) }
-
-
-
+    var showScanner by remember { mutableStateOf(false) }
     var scanResult by remember{ mutableStateOf("Chưa có kết quả") }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -97,44 +121,51 @@ fun Information(
             backgroundColor = R.color.darkblue ,
             alignment = Alignment.Center,
             onDeleteNavClicked = {
-                taiKhoanViewModel.deleteTaiKhoa(tenSĐT)
+//                taiKhoanViewModel.deleteTaiKhoa(tenSĐT)
                 navController.popBackStack()
-                                 },
+            },
             isVisible = true
-
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        QRCard {
-            // Khi bấm vào QRCard, khởi chạy quét mã QR
-            val options = GmsBarcodeScannerOptions.Builder()
-                .setBarcodeFormats(
-                    Barcode.FORMAT_QR_CODE,
-                    Barcode.FORMAT_AZTEC,
-                    Barcode.FORMAT_ALL_FORMATS
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clickable { showScanner = true }
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.qrscan),
+                    contentDescription = "scan icon",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
                 )
-                .build()
-
-            val scanner: GmsBarcodeScanner = GmsBarcodeScanning.getClient(context, options)
-
-            scanner.startScan()
-                .addOnSuccessListener { barcode ->
-                    // Cập nhật scanResult khi quét thành công
-                    scanResult = barcode.rawValue ?: "Không có dữ liệu"
-                    val parts = scanResult.split("|")
-                    inforViewModel.onCCCDChanged(parts.get(0))
-                    inforViewModel.onNameChanged(parts.get(2))
-                    inforViewModel.onBirthdayChanged(parts.get(3).substring(0,2)+"/"+parts.get(3).substring(2,4)+"/"+parts.get(3).substring(4))
-                    inforViewModel.onGenderChanged(parts.get(4))
-                    inforViewModel.onQuequanChanged(parts.get(5))
-
-                }
-                .addOnFailureListener { e ->
-                    // Hiển thị lỗi nếu có
-                    scanResult = "Lỗi: ${e.message}"
-                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "Quét CCCD để nhập nhanh thông tin",
+                    color = Color.Black,
+                    fontSize = 16.sp
+                )
+            }
+            if (showScanner) {
+                QRScanner(
+                    onScanSuccess = { cccd, name, birthDate, gender, address ->
+                        inforViewModel.apply {
+                            onCCCDChanged(cccd)
+                            onNameChanged(name)
+                            onBirthdayChanged(birthDate)
+                            onGenderChanged(gender)
+                            onQuequanChanged(address)
+                        }
+                    },
+                    onClose = { showScanner = false }
+                )
+            }
         }
-        
         // ho ten
         OutlinedTextField(
             value = inforViewModel.name ,
@@ -164,17 +195,17 @@ fun Information(
         //
         Spacer(modifier = Modifier.height(8.dp))
         //ngay sinh & gioi tinh
-        Row(verticalAlignment = Alignment.CenterVertically,) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = inforViewModel.birthday,
                 onValueChange = {},
                 label = { Text(text = "Ngày sinh")},
                 trailingIcon = {
-                               Image(
-                                   painter = painterResource(id = R.drawable.baseline_keyboard_arrow_down_24) ,
-                                   contentDescription = null,
-                                   colorFilter = ColorFilter.tint(Color.Gray)
-                               )
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_keyboard_arrow_down_24) ,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(Color.Gray)
+                    )
                 },
                 readOnly = true,
                 enabled = false,
@@ -334,14 +365,14 @@ fun Information(
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
-            
+
         }
         //
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 title = {
-                    Text(text = "Bạn xác nhận đăng ký tài khoản ",)
+                    Text(text = "Bạn xác nhận đăng ký tài khoản ")
 
                 },
 
@@ -389,7 +420,7 @@ fun Information(
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = colorResource(id = R.color.darkblue)
                         )
-                        ) {
+                    ) {
                         Text(text = "Xác nhận", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 },
@@ -400,7 +431,7 @@ fun Information(
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = colorResource(id = R.color.darkblue)
                         )
-                        ) {
+                    ) {
                         Text(text = "Hủy",  color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
@@ -408,49 +439,247 @@ fun Information(
         }
     }
 }
-        //
-
+//
 
 
 @Composable
-fun QRCard(onClick: () -> Unit = {}){
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .clickable { onClick() }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.qrscan),
-                contentDescription = "scan icon",
-                tint = Color.Black,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Quét CCCD để nhập nhanh thông tin",
-                color = Color.Black,
-                fontSize = 16.sp
-            )
+fun QRScanner(
+    onScanSuccess: (String, String, String, String, String) -> Unit,
+    onClose: () -> Unit
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    var torchEnabled by remember { mutableStateOf(false) }
+    var camera by remember { mutableStateOf<Camera?>(null) }
 
-        }
-
-
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
     }
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            hasCameraPermission = granted
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        launcher.launch(Manifest.permission.CAMERA)
+    }
+
+    if (hasCameraPermission) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                factory = { context ->
+                    PreviewView(context).apply {
+                        implementationMode = PreviewView.ImplementationMode.PERFORMANCE
+                        scaleType = PreviewView.ScaleType.FILL_CENTER
+                    }.also { previewView ->
+                        setupCamera(
+                            context = context,
+                            lifecycleOwner = lifecycleOwner,
+                            cameraExecutor = cameraExecutor,
+                            previewView = previewView,
+                            onCameraSet = { cam ->
+                                camera = cam
+                            },
+                            onBarcodeDetected = { barcodeValue ->
+                                try {
+                                    val processedValue = processQRContent(barcodeValue)
+                                    if (processedValue != null) {
+                                        val (cccd, name, birthDate, gender, address) = processedValue
+                                        onScanSuccess(cccd, name, birthDate, gender, address)
+                                        onClose()
+                                    } else {
+                                        Toast.makeText(context, "Không thể đọc thông tin từ QR", Toast.LENGTH_SHORT).show()
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Lỗi xử lý QR: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+
+            // Nút bật/tắt đèn flash
+            IconButton(
+                onClick = {
+                    torchEnabled = !torchEnabled
+                    camera?.cameraControl?.enableTorch(torchEnabled)
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(48.dp)
+                    .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = if (torchEnabled)
+                            R.drawable.baseline_flash_on_24
+                        else
+                            R.drawable.baseline_flash_off_24
+                    ),
+                    contentDescription = "Toggle flash",
+                    tint = Color.White
+                )
+            }
+
+            // Nút đóng
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+                    .size(48.dp)
+                    .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_close_24),
+                    contentDescription = "Close",
+                    tint = Color.White
+                )
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraExecutor.shutdown()
+        }
+    }
 }
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun InforPreview(){
-
-    val navController = rememberNavController()
-    Information(navController = navController)
+private fun processQRContent(rawContent: String): QRData? {
+    return try {
+        when {
+            rawContent.contains("|") -> {
+                val parts = rawContent.split("|")
+                if (parts.size >= 6) {
+                    QRData(
+                        cccd = parts[0].trim(),
+                        name = parts[2].trim(),
+                        birthDate = formatBirthDate(parts[3].trim()),
+                        gender = parseGender(parts[4].trim()),
+                        address = parts[5].trim()
+                    )
+                } else null
+            }
+            rawContent.contains("$") -> {
+                val parts = rawContent.split("$")
+                if (parts.size >= 6) {
+                    QRData(
+                        cccd = parts[0].trim(),
+                        name = parts[2].trim(),
+                        birthDate = formatBirthDate(parts[3].trim()),
+                        gender = parseGender(parts[4].trim()),
+                        address = parts[5].trim()
+                    )
+                } else null
+            }
+            else -> null
+        }
+    } catch (e: Exception) {
+        Log.e("QRProcessor", "Error processing QR content: ${e.message}")
+        null
+    }
 }
+
+private fun formatBirthDate(raw: String): String {
+    return try {
+        "${raw.substring(0, 2)}/${raw.substring(2, 4)}/${raw.substring(4)}"
+    } catch (e: Exception) {
+        raw
+    }
+}
+
+private fun parseGender(raw: String): String {
+    return when (raw.trim().lowercase()) {
+        "nam", "male", "m" -> "Nam"
+        "nữ", "nu", "female", "f" -> "Nữ"
+        else -> raw
+    }
+}
+
+@OptIn(ExperimentalGetImage::class)
+private fun setupCamera(
+    context: android.content.Context,
+    lifecycleOwner: androidx.lifecycle.LifecycleOwner,
+    cameraExecutor: ExecutorService,
+    previewView: PreviewView,
+    onCameraSet: (Camera) -> Unit,
+    onBarcodeDetected: (String) -> Unit
+) {
+    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+
+    cameraProviderFuture.addListener({
+        val cameraProvider = cameraProviderFuture.get()
+
+        val preview = Preview.Builder()
+            .setTargetRotation(previewView.display.rotation)
+            .build()
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+
+        val imageAnalysis = ImageAnalysis.Builder()
+            .setTargetRotation(previewView.display.rotation)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+
+        imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(
+                    mediaImage,
+                    imageProxy.imageInfo.rotationDegrees
+                )
+
+                val scanner = BarcodeScanning.getClient()
+                scanner.process(image)
+                    .addOnSuccessListener { barcodes ->
+                        for (barcode in barcodes) {
+                            barcode.rawValue?.let { value ->
+                                onBarcodeDetected(value)
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("QRScanner", "Barcode scanning failed: ${e.message}")
+                    }
+                    .addOnCompleteListener {
+                        imageProxy.close()
+                    }
+            } else {
+                imageProxy.close()
+            }
+        }
+
+        try {
+            cameraProvider.unbindAll()
+            val camera = cameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview,
+                imageAnalysis
+            )
+            onCameraSet(camera)
+        } catch (e: Exception) {
+            Log.e("QRScanner", "Use case binding failed", e)
+        }
+    }, ContextCompat.getMainExecutor(context))
+}
+
+data class QRData(
+    val cccd: String,
+    val name: String,
+    val birthDate: String,
+    val gender: String,
+    val address: String
+)

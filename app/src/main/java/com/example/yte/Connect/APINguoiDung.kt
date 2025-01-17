@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yte.address
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 @Parcelize
@@ -62,6 +64,10 @@ data class updateFCMTOKEN(
     val idBenhNhan: String,
     val fcmToken: String
 )
+data class updateSdt(
+    val idBenhNhan: String,
+    val sdt: String
+)
 
 private val retrofit = Retrofit.Builder()
     .baseUrl(address)
@@ -96,6 +102,11 @@ interface APINguoiDung{
     suspend fun checkMaPin(
         @Query("idBenhNhan") idBenhNhan: String,
         @Query("maPin") maPin: String
+    )
+
+    @PUT("/put/sdt")
+    suspend fun UpdateSdt(
+        @Body updatesdt: updateSdt
     )
 
 }
@@ -187,6 +198,18 @@ class NguoiDungViewModel : ViewModel(){
         viewModelScope.launch {
             val updatepin = updatePin(idBenhNhan,maPin)
             recipeServiceNguoiDung.UpdatePin(updatepin)
+        }
+    }
+    fun UpdateSdt(idBenhNhan: String, sdt: String){
+        viewModelScope.launch {
+            try {
+                val UpdateSdt = updateSdt(idBenhNhan,sdt)
+                recipeServiceNguoiDung.UpdateSdt(UpdateSdt)
+
+            }catch (e: Exception){
+                Log.e("updatesdt", "${e.message}")
+            }
+
         }
     }
     fun UpdateFcmToken(idBenhNhan: String, fcmToken: String) {

@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +57,7 @@ import androidx.navigation.NavController
 import com.example.yte.CCCD
 import com.example.yte.Connect.NguoiDungViewModel
 import com.example.yte.IdTaiKhoan
+import com.example.yte.Login_SignUp.logout
 import com.example.yte.R
 import com.example.yte.Sdt
 import com.example.yte.fcmToken
@@ -74,6 +77,7 @@ fun PersonalScreen(
     val httpStatus by nguoiDungViewModel.httpStatus.observeAsState()
     var hasMapin by remember{ mutableStateOf(false) }
     var showPinCodeScreen by remember { mutableStateOf(false) } // Trạng thái để hiển thị PinCodeScreen
+    val context = LocalContext.current
     LaunchedEffect(idBenhNhan) {
 
         nguoiDungViewModel.hasPin(idBenhNhan)
@@ -84,7 +88,7 @@ fun PersonalScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            FirstCard()
+            FirstCard(navController = navController)
             SecondCard(navController= navController)
             Spacer(modifier = Modifier.height(16.dp))
             setCard(
@@ -116,6 +120,7 @@ fun PersonalScreen(
                     queQuan =""
                     gioiTinh=""
                     soDu =0
+                    logout(context = context)
                     navController.navigate("LoginSignUpScreen")
                 }
             )
@@ -147,7 +152,7 @@ fun PersonalScreen(
 
 
 @Composable
-fun FirstCard(){
+fun FirstCard(navController: NavController){
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,14 +167,17 @@ fun FirstCard(){
                 .size(48.dp)
                 .background(Color(0xFFE0E0E0), shape = CircleShape),
                 contentAlignment = Alignment.Center) {
-                Image(
-                    painter = painterResource(id = R.drawable.anhtrang),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                )
+                IconButton(onClick = { /*TODO*/ navController.navigate("ChangeInFor")}) {
+                    Image(
+                        painter = painterResource(id = R.drawable.anhtrang),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(

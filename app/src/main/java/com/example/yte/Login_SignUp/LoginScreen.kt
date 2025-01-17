@@ -1,6 +1,7 @@
 package com.example.yte.Login_SignUp
 
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,9 +42,11 @@ fun LoginScreen(
     nguoiDungViewModel: NguoiDungViewModel = viewModel(),
     navController: NavController
 ) {
+    CheckLoginStatus(navController = navController)
     var passwordVisible by remember { mutableStateOf(false) } // Quản lý trạng thái hiển thị/ẩn mật khẩu
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     DismissKeyboard {
     Column(
@@ -143,6 +147,7 @@ fun LoginScreen(
                                     taiKhoanViewModel.kq.collect {apiResponse1->
                                         if(apiResponse1?.exists == true){
                                             isLogin = true
+                                            saveLoginSession(context,viewModel.numberPhone,viewModel.passWord)
                                             CoroutineScope(Dispatchers.IO).launch{
                                                 taiKhoanViewModel.getIdbyTenTk(viewModel.numberPhone)
                                                 taiKhoanViewModel.id.collect{IdResponse->
@@ -216,7 +221,57 @@ fun LoginScreen(
 }
 
 
+fun saveLoginSession(context: Context, phoneNumber: String, password: String) {
+    val sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
 
+    with(sharedPreferences.edit()) {
+        putString("phone_number", phoneNumber)
+        putString("password", password)
+        putBoolean("is_logged_in", true)
+        apply()
+    }
+}
+
+fun logout(context: Context) {
+    context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+        .edit()
+        .clear()
+        .apply()
+}
+
+@Composable
+fun CheckLoginStatus(navController: NavController) {
+    val context = LocalContext.current
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val taiKhoanViewModel: TaiKhoanViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        if (currentRoute != "Home") {
+            val sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            val isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false)
+            val phoneNumber = sharedPreferences.getString("phone_number", null)
+            val password = sharedPreferences.getString("password", null)
+
+            if (isLoggedIn && !phoneNumber.isNullOrEmpty() && !password.isNullOrEmpty()) {
+                taiKhoanViewModel.loGin(phoneNumber, password)
+                taiKhoanViewModel.kq.collect { apiResponse ->
+                    if (apiResponse?.exists == true) {
+                        // Thêm phần lấy ID
+                        taiKhoanViewModel.getIdbyTenTk(phoneNumber)
+                        taiKhoanViewModel.id.collect { IdResponse ->
+                            IdTaiKhoan = IdResponse?.rowsDeleted ?: 0
+                            println(IdTaiKhoan)
+                            isLogin = true
+                            navController.navigate("Home")
+                        }
+                    } else {
+
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 

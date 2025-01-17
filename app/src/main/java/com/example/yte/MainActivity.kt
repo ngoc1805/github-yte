@@ -65,6 +65,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import vn.zalopay.sdk.Environment
 import vn.zalopay.sdk.ZaloPaySDK
 import android.app.NotificationChannel
+import com.example.yte.Home.ChangeInFor
 import com.example.yte.Login_SignUp.LoginViewModel
 //import com.example.yte.Otp.PhoneAuthScreen
 //import dagger.hilt.android.AndroidEntryPoint
@@ -83,12 +84,14 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         requestNotificationPermission()
 
-
-
-
         enableEdgeToEdge()
-
         setContent {
+            var showSplash by remember { mutableStateOf(true) }
+            if (showSplash) {
+                SplashScreen {
+                    showSplash = false // Kết thúc Splash Screen
+                }
+            } else {
             YTETheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
@@ -116,7 +119,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
+    } }
 
     private fun requestNotificationPermission() {
 
@@ -137,7 +140,7 @@ class MainActivity : ComponentActivity() {
 
 
 }
-val ipCuaNgoc = "192.168.0.102"
+val ipCuaNgoc = "192.168.0.100"
 val address = "http://$ipCuaNgoc:8080/"
 //"192.168.0.101"
 val loaitaikhoa = "benhnhan"
@@ -215,6 +218,7 @@ fun AppnavHost(
         composable("reEnterPin"){ reEnterPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("ChangePassWord"){ ChangePassWord(navController)}
 //        composable("PhoneAuthScreen"){ PhoneAuthScreen(navController = navController, activity = activity, loginViewModel = loginViewModel)}
+        composable("ChangeInFor"){ ChangeInFor(navController)}
     }
 
 }

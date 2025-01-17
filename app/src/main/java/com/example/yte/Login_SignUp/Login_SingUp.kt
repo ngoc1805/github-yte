@@ -77,7 +77,7 @@ fun LoginSignUpScreen(
                 onClick = { /* todo chuyen huong */
                           navController.navigate("Home")
                           },
-                modifier = Modifier.statusBarsPadding()) {
+                modifier = Modifier.statusBarsPadding().offset(y = 32.dp)) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     tint = arrowdownColor,

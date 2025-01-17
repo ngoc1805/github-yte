@@ -41,15 +41,19 @@ import com.example.yte.Api.CreateOrder
 import com.example.yte.AppBarView
 import com.example.yte.IdTaiKhoan
 import com.example.yte.Connect.NguoiDungViewModel
+import com.example.yte.Connect.ThongBaoViewModel
 import com.example.yte.DismissKeyboard
+import com.example.yte.Firebase.ChatViewModel
 import com.example.yte.R
+import com.example.yte.fcmToken
 import com.example.yte.formatNumber
+import com.example.yte.hoTen
 import com.example.yte.idBenhNhan
 import com.example.yte.soDu
 import vn.zalopay.sdk.ZaloPayError
 import vn.zalopay.sdk.ZaloPaySDK
 import vn.zalopay.sdk.listeners.PayOrderListener
-
+var success by mutableStateOf(false)
 class OrderPayment : ComponentActivity() {
     private var moneyAmount: String = ""
 
@@ -83,6 +87,8 @@ class OrderPayment : ComponentActivity() {
                         override fun onPaymentSucceeded(transactionId: String, zpTransToken: String, appTransId: String) {
                             runOnUiThread {
                                 Toast.makeText(this@OrderPayment, "Thanh toán thành công", Toast.LENGTH_SHORT).show()
+                                success = true
+
                                 // Trả kết quả về activity trước
                                 val resultIntent = Intent()
                                 resultIntent.putExtra("paymentResult", "success")
@@ -158,7 +164,9 @@ class PaymentViewModel : ViewModel() {
 fun Payment(
     navController: NavController,
     viewModel: PaymentViewModel = viewModel(),
-    nguoiDungViewModel: NguoiDungViewModel = viewModel()
+    nguoiDungViewModel: NguoiDungViewModel = viewModel(),
+    thongBaoViewModel: ThongBaoViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel()
 ) {
 
 
@@ -195,6 +203,10 @@ fun Payment(
                 nguoiDungViewModel.UpdatSoDu(idBenhNhan,balance)
                 nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
                 soDu =  nguoiDungViewModel.nguoiDung?.sodu ?: 0
+                navController.navigate("payment"){
+                    popUpTo("payment") { inclusive = true }
+                }
+
 
             }
         } else {
@@ -337,6 +349,23 @@ fun Payment(
                 }
             )
         }
+    }
+    if(success){
+
+        thongBaoViewModel.addThongBao(
+            idBenhNhan,
+            "Bạn đã nạp thành công ${formatNumber(money.toInt())}VNĐ, số dư: ${formatNumber(
+                soDu+money.toInt())}VNĐ",
+            "Payment"
+        )
+        chatViewModel.sendMessage(
+            title = "Biến động số dư",
+            body = "$hoTen ơi \nBạn đã nạp thành công ${formatNumber(money.toInt())}VNĐ\nSố dư: ${formatNumber(
+                soDu+money.toInt())}VNĐ",
+            remoteToken = fcmToken,
+            isBroadcast = false
+        )
+        success = false
     }
 }
 

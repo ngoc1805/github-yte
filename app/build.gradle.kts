@@ -71,6 +71,17 @@ dependencies {
 //    kapt("com.google.dagger:hilt-compiler:2.44")
 
 
+    // CameraX core library
+    implementation ("androidx.camera:camera-core:1.3.0")
+
+    // CameraX Camera2 implementation
+    implementation ("androidx.camera:camera-camera2:1.3.0")
+
+    // CameraX Lifecycle library
+    implementation ("androidx.camera:camera-lifecycle:1.3.0")
+
+    // CameraX View class
+    implementation ("androidx.camera:camera-view:1.3.0")
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-messaging")
@@ -113,6 +124,7 @@ dependencies {
     )))
     implementation(libs.play.services.maps)
     implementation(libs.firebase.auth)
+    implementation(libs.core)
 
 
     val nav_version = "2.7.5"

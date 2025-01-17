@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yte.address
@@ -65,6 +67,8 @@ class ThongBaoViewModel : ViewModel(){
     var thongBaoList by mutableStateOf<List<ThongBao>>(emptyList())
     var errorMessage by mutableStateOf<String?>(null)
     var hasUnreceivedNotification by mutableStateOf<Boolean>(false)
+    private var _hasNotification = MutableLiveData<Boolean>()
+    val hasNotification: LiveData<Boolean> get() = _hasNotification
     fun addThongBao(idBenhNhan: String, noiDung: String, duongDan: String) {
         viewModelScope.launch {
             try {
@@ -119,7 +123,7 @@ class ThongBaoViewModel : ViewModel(){
             try {
                 // Gọi API kiểm tra thông báo chưa nhận từ server
                 val result = recipeServiceThongBao.kiemTraThongBaoChuaNhan(idBenhNhan)
-                hasUnreceivedNotification = result // Lưu lại kết quả trả về
+                _hasNotification.postValue(result) // Lưu lại kết quả trả về
             } catch (e: Exception) {
                 errorMessage = "Error checking unreceived notifications: ${e.message}"
             }

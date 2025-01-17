@@ -88,6 +88,7 @@ fun AppoimentmentScreen(
         LazyColumn {
             items(lichKhams) { lichKham ->
                 ApoimentCard(
+                    navController = navController,
                     lichKham = lichKham,
                     onClicked = {
                         appointmentViewModel.selectedLichKham.value = lichKham
@@ -109,7 +110,8 @@ fun ApoimentCard(
     appointmentViewModel: AppointmentViewModel = viewModel(),
     nguoiDungViewModel: NguoiDungViewModel = viewModel(),
     chatViewModel: ChatViewModel = viewModel(),
-    onClicked: () -> Unit = {}
+    onClicked: () -> Unit = {},
+    navController: NavController
 ){
     var doctorName by remember { mutableStateOf("Đang tải...") }
     var khoa by remember { mutableStateOf("Đang tải...") }
@@ -265,6 +267,8 @@ fun ApoimentCard(
                     )
 
                     showDialog = false
+                    navController.navigate("Home/1")
+
 
                 }) {
                     Text(text = "OK", color = colorResource(id = R.color.darkblue))

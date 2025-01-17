@@ -2,11 +2,14 @@ package com.example.yte
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,10 +29,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -127,7 +133,7 @@ fun AppBarView(
                         text = title,
                         color = colorResource(id = color),
                         fontSize = 20.sp, // Tăng kích thước chữ
-                        modifier = Modifier.align(alignment)
+                        modifier = Modifier.align(alignment).offset(y = 16.dp)
                     )
 
                     // Biểu tượng thùng rác ở góc phải nếu tiêu đề là "Thông báo"
@@ -147,7 +153,7 @@ fun AppBarView(
                     if (title.contains("Thông tin cá nhân")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -161,7 +167,9 @@ fun AppBarView(
                     if (title.contains("Chỉ số sức khỏe")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier
+                                .align(Alignment.BottomStart).offset(y = 8.dp)
+                                .padding(16.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -175,7 +183,7 @@ fun AppBarView(
                     if (title.contains("Hồ sơ sức khỏe")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -189,7 +197,7 @@ fun AppBarView(
                     if (title.contains("Nạp tiền")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -203,7 +211,7 @@ fun AppBarView(
                     if (title.contains("Đặt lịch khám")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -217,7 +225,7 @@ fun AppBarView(
                     if (title.contains("Chọn bác sĩ")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -231,7 +239,7 @@ fun AppBarView(
                     if (title.contains("Lịch hẹn")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -245,7 +253,7 @@ fun AppBarView(
                     if (title.contains("Nội dung chi tiết")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -259,7 +267,7 @@ fun AppBarView(
                     if (title.contains("Thanh toán")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -273,7 +281,7 @@ fun AppBarView(
                     if (title.contains("Lịch sử đặt khám")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -287,7 +295,7 @@ fun AppBarView(
                     if (title.contains("Khám bệnh")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -301,7 +309,7 @@ fun AppBarView(
                     if (title.contains("Kết quả khám bệnh")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -315,7 +323,7 @@ fun AppBarView(
                     if (title.contains("Trò chuyện cùng AI")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -329,7 +337,21 @@ fun AppBarView(
                     if (title.contains("Đổi mật khẩu")) {
                         IconButton(
                             onClick = onDeleteNavClicked,
-                            modifier = Modifier.align(Alignment.BottomStart)
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "ArrowBack Icon"
+                            )
+
+                        }
+                    }
+                    //
+                    if (title.contains("Thông tin người dùng")) {
+                        IconButton(
+                            onClick = onDeleteNavClicked,
+                            modifier = Modifier.align(Alignment.BottomStart).offset(y = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -378,4 +400,23 @@ fun keyboardAsState(): State<Boolean> {
     }
 
     return isKeyboardOpen
+}
+
+
+@Composable
+fun SplashScreen(onTimeout: () -> Unit) {
+    // Thời gian chờ 3 giây
+    LaunchedEffect(Unit) {
+        delay(2000) // 3 giây
+        onTimeout()
+    }
+
+    // Giao diện SplashScreen
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // Hiển thị logo hoặc ảnh
+       Image(painter = painterResource(id = R.drawable.medicalteam), contentDescription = null)
+    }
 }

@@ -367,7 +367,7 @@ fun MedicalExamination(
         ) {
             Text(text = "Thanh toán")
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
     }
     if (showPinCodeScreen) {

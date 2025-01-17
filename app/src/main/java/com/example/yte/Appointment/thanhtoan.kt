@@ -13,6 +13,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
 import androidx.compose.material.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,6 +71,7 @@ fun thanhtoan(
     var tienCoc = 100000
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
+    var isChecked by remember { mutableStateOf(false) }
 
     //
     val httpStatus by nguoiDungViewModel.httpStatus.observeAsState()
@@ -124,20 +126,53 @@ fun thanhtoan(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)) {
             Text(
-                text = "!!! Số tiền còn lại sẽ được thanh toán vào hôm sau, nếu không đi khám số tiền cọc sẽ không được hoàn lại + $idBenhNhan + ${thanhToanViewModel.bacSiId.value} + ${thanhToanViewModel.ngayKham.value} + ${thanhToanViewModel.gioKham.value} + ${thanhToanViewModel.trangThai.value}",
-                fontSize = 16.sp,
+                text = "Chú ý: Số tiền còn lại sẽ được thanh toán vào hôm sau, nếu không đi khám số tiền cọc sẽ không được hoàn lại  ",
+                //+ $idBenhNhan + ${thanhToanViewModel.bacSiId.value} + ${thanhToanViewModel.ngayKham.value} + ${thanhToanViewModel.gioKham.value} + ${thanhToanViewModel.trangThai.value}
+                fontSize = 18.sp,
 
                 modifier = Modifier.align(Alignment.Center)
             )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)) {
+            Text(
+                text = "Chú ý: Bạn chỉ có thể hủy lịch khám và nhận lại tiền cọc nếu ngày hiện tại và ngày khám bệnh cách nhau nhiều hơn 2 ngày. Trong vòng 2 ngày đổ lại bạn không thể hủy lịch khám, tiền cọc sẽ không được hoàn lại",
+                //+ $idBenhNhan + ${thanhToanViewModel.bacSiId.value} + ${thanhToanViewModel.ngayKham.value} + ${thanhToanViewModel.gioKham.value} + ${thanhToanViewModel.trangThai.value}
+                fontSize = 18.sp,
+
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)) {
+            //todo
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { isChecked = it }
+                )
+                Text(
+                    text = "Tôi đồng ý và vẫn quyết định đặt lịch khám",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.weight(1f))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Số tiền: ${formatNumber(tienCoc)} VNĐ ",
+
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterVertically),
-                fontSize = 16.sp
+                fontSize = 18.sp
             )
             Button(
                 onClick = {
@@ -183,16 +218,19 @@ fun thanhtoan(
                           },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(id = R.color.darkblue)
-                )
+                ),
+                enabled = isChecked
             ) {
                 Text(
                     text = "Thanh toán",
                     fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
                     color = Color.White
                 )
             }
 
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (showDialog) {
             AlertDialog(

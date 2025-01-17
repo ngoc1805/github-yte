@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -81,9 +82,12 @@ fun Home(
     var alignment by remember { mutableStateOf(Alignment.TopStart) }
     var isVisible by rememberSaveable { mutableStateOf(true) }
     var isLoading by remember { mutableStateOf(true) }
-    var hasnoitice by remember { mutableStateOf(true) }
+    val hasnoitice by thongBaoViewModel.hasNotification.observeAsState()
 
 
+    LaunchedEffect(idBenhNhan) {
+        thongBaoViewModel.kiemTraThongBaoChuaNhan(idBenhNhan)
+    }
     LaunchedEffect(IdTaiKhoan) {
         nguoiDungViewModel.getNguoiDUngById(IdTaiKhoan)
 
@@ -136,6 +140,9 @@ fun Home(
                         appbarBackgroundColor = R.color.white
                         titles = "Xin chào $hoTen"
                         alignment = Alignment.BottomStart
+                    LaunchedEffect(idBenhNhan) {
+                        thongBaoViewModel.kiemTraThongBaoChuaNhan(idBenhNhan)
+                    }
                 }
             }
             else if(selectedTab == 1){
@@ -149,6 +156,10 @@ fun Home(
                         appbarBackgroundColor = R.color.darkblue
                         titles = "Lịch khám"
                         alignment = Alignment.Center
+                        LaunchedEffect(idBenhNhan) {
+                            thongBaoViewModel.kiemTraThongBaoChuaNhan(idBenhNhan)
+                        }
+
                     } else {
                         isVisible = false
                         navController.navigate("LoginSignUpScreen")
@@ -163,6 +174,10 @@ fun Home(
                         appbarBackgroundColor = R.color.white
                         titles = "Thông báo"
                         alignment = Alignment.Center
+                        LaunchedEffect(idBenhNhan) {
+                            thongBaoViewModel.kiemTraThongBaoChuaNhan(idBenhNhan)
+                        }
+                        thongBaoViewModel.updateAllDaNhanByIdBenhNhan(idBenhNhan)
                     } else {
                         isVisible = false
                         navController.navigate("LoginSignUpScreen")
@@ -183,6 +198,9 @@ fun Home(
                         appbarBackgroundColor = R.color.darkblue
                         titles = "Cá nhân"
                         alignment = Alignment.BottomCenter
+                        LaunchedEffect(idBenhNhan) {
+                            thongBaoViewModel.kiemTraThongBaoChuaNhan(idBenhNhan)
+                        }
                     } else {
                         isVisible = false
                         navController.navigate("LoginSignUpScreen")
@@ -321,7 +339,7 @@ fun Home(
                             tint = if(selectedTab == 2) Color.White else Color.Gray,
                             modifier = Modifier.size(24.dp)
                         )
-                        if(hasnoitice){
+                        if(hasnoitice == true){
                             Box(
                                 modifier = Modifier
                                     .size(8.dp)
@@ -332,12 +350,7 @@ fun Home(
                             }
                         }
                     }
-//                    Icon(
-//                        imageVector = Icons.Default.Notifications,
-//                        contentDescription ="Notificatios Icon",
-//                        tint = if(selectedTab == 2) Color.White else Color.Gray,
-//                        modifier = Modifier.size(24.dp)
-//                        )
+
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Thông báo",
