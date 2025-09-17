@@ -199,6 +199,22 @@ fun ButtonGrid(navController: NavController, appointmentViewModel: AppointmentVi
 
 //        Spacer(modifier = Modifier.weight(1f))
     }
+    Spacer(modifier = Modifier.height(12.dp))
+    Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        CustomButtons(
+                icon = painterResource(id = R.drawable.datlichtiemvaccine), // Reusing an icon for now
+                text = "Tank Game",
+                modifier = Modifier.weight(1f),
+                onDeleteNavClicked = {navController.navigate("TankGame")}
+        )
+        // Empty space for second button in this row
+        Spacer(modifier = Modifier.weight(1f))
+    }
 }
 
 //@Preview(showBackground = true)
