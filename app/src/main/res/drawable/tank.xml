@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="80dp"
+    android:viewportWidth="120"
+    android:viewportHeight="80">
+    
+    <!-- Tank body -->
+    <path
+        android:fillColor="#2E8B57"
+        android:strokeColor="#000000"
+        android:strokeWidth="2"
+        android:pathData="M10,25 L90,25 Q95,25 95,30 L95,65 Q95,70 90,70 L10,70 Q5,70 5,65 L5,30 Q5,25 10,25 Z" />
+    
+    <!-- Tank turret -->
+    <path
+        android:fillColor="#228B22"
+        android:strokeColor="#000000"
+        android:strokeWidth="2"
+        android:pathData="M30,15 L70,15 Q75,15 75,20 L75,35 Q75,40 70,40 L30,40 Q25,40 25,35 L25,20 Q25,15 30,15 Z" />
+    
+    <!-- Tank cannon -->
+    <path
+        android:fillColor="#1F5F1F"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:pathData="M75,22 L115,20 Q118,20 118,25 L118,30 Q118,35 115,35 L75,33 Z" />
+    
+    <!-- Tank tracks -->
+    <circle
+        android:fillColor="#333333"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:cx="20"
+        android:cy="65"
+        android:r="8" />
+    <circle
+        android:fillColor="#333333"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:cx="40"
+        android:cy="65"
+        android:r="8" />
+    <circle
+        android:fillColor="#333333"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:cx="60"
+        android:cy="65"
+        android:r="8" />
+    <circle
+        android:fillColor="#333333"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:cx="80"
+        android:cy="65"
+        android:r="8" />
+        
+</vector>

@@ -67,6 +67,7 @@ import vn.zalopay.sdk.ZaloPaySDK
 import android.app.NotificationChannel
 import com.example.yte.Home.ChangeInFor
 import com.example.yte.Login_SignUp.LoginViewModel
+import com.example.yte.Game.GameSurface
 //import com.example.yte.Otp.PhoneAuthScreen
 //import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.HiltAndroidApp
@@ -217,6 +218,7 @@ fun AppnavHost(
         composable("createPin"){ createPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("reEnterPin"){ reEnterPin(navController, appointmentViewModel=appointmentViewModel)}
         composable("ChangePassWord"){ ChangePassWord(navController)}
+        composable("TankGame"){ GameSurface(navController)}
 //        composable("PhoneAuthScreen"){ PhoneAuthScreen(navController = navController, activity = activity, loginViewModel = loginViewModel)}
         composable("ChangeInFor"){ ChangeInFor(navController)}
     }
