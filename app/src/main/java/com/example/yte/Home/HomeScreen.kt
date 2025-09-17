@@ -207,7 +207,7 @@ fun ButtonGrid(navController: NavController, appointmentViewModel: AppointmentVi
             horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         CustomButtons(
-                icon = painterResource(id = R.drawable.datlichtiemvaccine), // Reusing an icon for now
+                icon = painterResource(id = R.drawable.tank), // Use the new tank icon
                 text = "Tank Game",
                 modifier = Modifier.weight(1f),
                 onDeleteNavClicked = {navController.navigate("TankGame")}

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -129,11 +130,14 @@ fun GameCanvas(modifier: Modifier = Modifier) {
         screenWidth = size.width
         screenHeight = size.height
         
-        // Draw background (sky)
+        // Draw background (sky with gradient effect)
         drawRect(
             color = Color(GameConstants.BACKGROUND_COLOR),
             size = Size(size.width, size.height)
         )
+        
+        // Draw simple clouds in background
+        drawCloudBackground(this, size.width, size.height)
         
         // Draw ground
         val groundHeight = size.height * GameConstants.GROUND_HEIGHT_RATIO
@@ -142,6 +146,15 @@ fun GameCanvas(modifier: Modifier = Modifier) {
             topLeft = Offset(0f, size.height - groundHeight),
             size = Size(size.width, groundHeight)
         )
+        
+        // Draw ground texture (simple lines)
+        for (i in 0..5) {
+            drawRect(
+                color = Color(0xFF654321), // Darker brown
+                topLeft = Offset(0f, size.height - groundHeight + (i * 10f)),
+                size = Size(size.width, 2f)
+            )
+        }
         
         // Draw cloud bricks
         cloudBricks.forEach { brick ->
@@ -176,4 +189,50 @@ private fun initializeCloudBricks(screenWidth: Float, screenHeight: Float): List
 
 private fun isColliding(rect1: android.graphics.RectF, rect2: android.graphics.RectF): Boolean {
     return rect1.intersect(rect2)
+}
+
+private fun drawCloudBackground(drawScope: DrawScope, screenWidth: Float, screenHeight: Float) {
+    // Draw simple background clouds for atmosphere
+    val cloudColor = Color(0xFFFFFFFF).copy(alpha = 0.6f)
+    
+    // Cloud 1
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 40f,
+        center = Offset(screenWidth * 0.2f, screenHeight * 0.15f)
+    )
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 35f,
+        center = Offset(screenWidth * 0.25f, screenHeight * 0.15f)
+    )
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 30f,
+        center = Offset(screenWidth * 0.3f, screenHeight * 0.15f)
+    )
+    
+    // Cloud 2
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 45f,
+        center = Offset(screenWidth * 0.7f, screenHeight * 0.25f)
+    )
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 40f,
+        center = Offset(screenWidth * 0.75f, screenHeight * 0.25f)
+    )
+    
+    // Cloud 3
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 35f,
+        center = Offset(screenWidth * 0.1f, screenHeight * 0.35f)
+    )
+    drawScope.drawCircle(
+        color = cloudColor,
+        radius = 32f,
+        center = Offset(screenWidth * 0.14f, screenHeight * 0.35f)
+    )
 }
